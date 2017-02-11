@@ -1,5 +1,5 @@
 CXX = g++
-OBJECTS = main.o test.o
+OBJECTS = main.o beaner.o
 DESTDIR_TARGET = main
 
 

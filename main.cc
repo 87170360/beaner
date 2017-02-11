@@ -1,8 +1,8 @@
 #include<iostream>
 
-#include "test.h"
+#include "beaner.h"
 
 int main()
 {
-    std::cout << "Hello." << func() << std::endl;
+    std::cout << "Hello." << std::endl;
 }
