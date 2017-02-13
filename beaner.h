@@ -2,6 +2,7 @@
 #define __BEANER_H__
 
 #include <time.h>       /* time */
+#include <stdlib.h> 
 
 class Beaner
 {
@@ -9,7 +10,7 @@ class Beaner
         Beaner(void);
         ~Beaner(void);
 
-    private:
+    public:
         int m_dna[243];
         int m_score;
 };
