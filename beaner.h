@@ -4,6 +4,8 @@
 #include <time.h>       /* time */
 #include <stdlib.h> 
 
+const int DNASIZE = 243;
+
 class Beaner
 {
     public:
@@ -11,7 +13,7 @@ class Beaner
         ~Beaner(void);
 
     public:
-        int m_dna[243];
+        int m_dna[DNASIZE];
         int m_score;
 };
 
