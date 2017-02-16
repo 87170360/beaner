@@ -10,12 +10,17 @@ void swapDna(int p1[], int p2[], int ret[], int size)
     srand(time(NULL));
     std::copy(p2, p2 + size, ret);
     int point = rand() % size + 1;
-    std::cout << "point:" << point << std::endl;
+    //std::cout << "point:" << point << std::endl;
     std::copy(p1, p1 + point, ret);
 
     point = rand() % size;
-    std::cout << "point:" << point << std::endl;
+    //std::cout << "point:" << point << std::endl;
     ret[point] = rand() % BEHAVIOR;
+}
+
+void selectChampion(int beaner[], int size, int ret[])
+{
+
 }
 
 int main()
