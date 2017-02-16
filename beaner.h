@@ -5,6 +5,7 @@
 #include <stdlib.h> 
 
 const int DNASIZE = 243;
+const int BEHAVIOR = 7;
 
 class Beaner
 {
