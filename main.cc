@@ -1,5 +1,7 @@
 #include<iostream>
 #include<map>
+#include<vector>
+#include <algorithm>
 #include "beaner.h"
 using std::map;
 
@@ -23,10 +25,16 @@ void selectChampion(Beaner all[], int weight[], int size, int ret[])
 
 }
 
-void sortBeaner(Beaner all[])
+bool compareBeaner(const Beaner& a, const Beaner& b)
 {
-
+    return a.m_score > b.m_score;
 }
+
+void sortBeaner(std::vector<Beaner>& all)
+{
+    std::sort(all.begin(), all.end(), compareBeaner);
+}
+
 
 int main()
 {
@@ -44,14 +52,21 @@ int main()
 
 
     //all beaner
-    Beaner m_all[BEANER_NUM];
+    std::vector<Beaner> m_all;
     //weight
     int m_weight[BEANER_NUM];
     for(int i = 0; i < BEANER_NUM; ++i)
     {
         Beaner bean = Beaner();
         bean.m_score = i;
-        m_all[i] = bean; 
+        m_all.push_back(bean);
         m_weight[i] = BEANER_NUM - i;
+    }
+
+    sortBeaner(m_all);
+
+    for(int i = 0; i < BEANER_NUM; ++i)
+    {
+        std::cout << m_all[i].m_score << " " ;
     }
 }
