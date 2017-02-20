@@ -6,6 +6,7 @@
 using std::map;
 
 const int BEANER_NUM = 200;
+const int MAP_SIZE = 12;
 
 void swapDna(int p1[], int p2[], int ret[], int size)
 {
@@ -46,21 +47,30 @@ void sortBeaner(std::vector<Beaner>& all)
     std::sort(all.begin(), all.end(), compareBeaner);
 }
 
+int pos2status(int x, int y, int mapinfo[][])
+{
+   int up       = mapinfo[y - 1][x]; 
+   int down     = mapinfo[y + 1][x]; 
+   int left     = mapinfo[y][x - 1]; 
+   int right    = mapinfo[y][x + 1]; 
+   int cur      = mapinfo[y][x]; 
+   return up * 10000 + down * 1000 + left * 100 + right * 10 + cur;
+}
 
 int main()
 {
     srand(time(NULL));
-/* test swapDna
-    int x[] = {1,2,3,4,5,6};
-    int y[] = {11,22,33,44,55,66};
-    int b[] = {0,0,0,0,0,0};
-    swapDna(x, y, b, 6);
-    for(int i = 0; i < sizeof(b) / sizeof(int); ++i)
-    {
-        std::cout << b[i] << " " ;
-    }
-    std::cout << std::endl;
-*/
+    /* test swapDna
+       int x[] = {1,2,3,4,5,6};
+       int y[] = {11,22,33,44,55,66};
+       int b[] = {0,0,0,0,0,0};
+       swapDna(x, y, b, 6);
+       for(int i = 0; i < sizeof(b) / sizeof(int); ++i)
+       {
+       std::cout << b[i] << " " ;
+       }
+       std::cout << std::endl;
+       */
 
 
     //all beaner
@@ -82,21 +92,85 @@ int main()
 
     //test weightSelect
     /*
-    std::map<int, int> m_testweight;
-    for(int i = 0; i < BEANER_NUM; ++i)
+       std::map<int, int> m_testweight;
+       for(int i = 0; i < BEANER_NUM; ++i)
+       {
+       m_testweight[m_weight[i]] = 0;
+       }
+
+       for(int i = 0; i < 100000000; ++i)
+       {
+       int val = weightSelect(m_weight, BEANER_NUM, m_totalWeight); 
+       m_testweight[m_weight[val]] += 1;
+       }
+
+       for(int i = 0; i < BEANER_NUM; ++i)
+       {
+       std::cout << m_weight[i] << ":" << m_testweight[m_weight[i]] / 1000000.0f << "% ";
+       }
+       */
+
+    //init status index, 0 none, 1 bean, 2 wall
+    std::map<int, int> m_sindex;
+    int indexCount = 0;
+    int indexKey = 0;
+    for(int i = 0; i < 3; ++i)
     {
-        m_testweight[m_weight[i]] = 0;
+        for(int j = 0; j < 3; ++j)
+        {
+            for(int k = 0; k < 3; ++k)
+            {
+                for(int l = 0; l < 3; ++l)
+                {
+                    for(int m = 0; m < 3; ++m)
+                    {
+                       indexCount++;  
+                       indexKey = i * 10000 + j * 1000 + k * 100 + l * 10 + m; 
+                       m_sindex[indexKey] = indexCount;
+                    }
+                }
+            }
+        }
     }
 
-    for(int i = 0; i < 100000000; ++i)
+    /*
+    for(std::map<int, int>::iterator it = m_sindex.begin(); it != m_sindex.end(); ++it)
     {
-        int val = weightSelect(m_weight, BEANER_NUM, m_totalWeight); 
-        m_testweight[m_weight[val]] += 1;
+        std::cout << "key:" << it->first << " , value:" << it->second << " "; 
     }
-
-    for(int i = 0; i < BEANER_NUM; ++i)
-    {
-        std::cout << m_weight[i] << ":" << m_testweight[m_weight[i]] / 1000000.0f << "% ";
-    }
+    std::cout << std::endl;
+    std::cout << "size:" << m_sindex.size();
     */
+
+    //init map data 12 * 12,  y * x
+    int m_mapinfo[MAP_SIZE][MAP_SIZE];
+    //wall
+    for(int i = 0; i < MAP_SIZE; ++i)
+    {
+        m_mapinfo[0][i] = 2; 
+        m_mapinfo[11][i] = 2; 
+        m_mapinfo[i][0] = 2; 
+        m_mapinfo[i][11] = 2; 
+    }
+    //bean
+    for(int i = 1; i <= 10; ++i)
+    {
+        for(int j = 1; j <= 10; ++j)
+        {
+            m_mapinfo[i][j] = rand() % 2; 
+        }
+    }
+        
+    for(int i = 0; i < MAP_SIZE; ++i)
+    {
+        for(int j = 0; j < MAP_SIZE; ++j)
+        {
+            std::cout << m_mapinfo[i][j] << " "; 
+        }
+        std::cout << std::endl;
+    }
+
+    //pos info -> status
+    int status = pos2status(1, 1, m_mapinfo);
+    //std::cout << 
 }
