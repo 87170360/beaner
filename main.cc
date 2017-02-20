@@ -47,7 +47,7 @@ void sortBeaner(std::vector<Beaner>& all)
     std::sort(all.begin(), all.end(), compareBeaner);
 }
 
-int pos2status(int x, int y, int mapinfo[][])
+int pos2status(int x, int y, int mapinfo[MAP_SIZE][MAP_SIZE])
 {
    int up       = mapinfo[y - 1][x]; 
    int down     = mapinfo[y + 1][x]; 
@@ -157,20 +157,32 @@ int main()
     {
         for(int j = 1; j <= 10; ++j)
         {
-            m_mapinfo[i][j] = rand() % 2; 
+            m_mapinfo[j][i] = rand() % 2; 
         }
     }
-        
+     
+    //show map
+    /*
     for(int i = 0; i < MAP_SIZE; ++i)
     {
         for(int j = 0; j < MAP_SIZE; ++j)
         {
-            std::cout << m_mapinfo[i][j] << " "; 
+            std::cout << m_mapinfo[j][i] << " "; 
         }
         std::cout << std::endl;
     }
+    */
 
-    //pos info -> status
-    int status = pos2status(1, 1, m_mapinfo);
-    //std::cout << 
+    //test pos info -> status
+    /*
+    for(int i = 1; i < MAP_SIZE - 1; ++i)
+    {
+        for(int j = 1; j < MAP_SIZE - 1; ++j)
+        {
+            int status = pos2status(j, i, m_mapinfo);
+            std::cout << m_sindex[status] << " "; 
+        }
+        std::cout << std::endl;
+    }
+    */
 }
