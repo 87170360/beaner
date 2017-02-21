@@ -5,8 +5,35 @@
 #include "beaner.h"
 using std::map;
 
+/*
+ y
+ ^
+ |
+ |
+ |
+ -------------> x
+ (0,0)
+ */
+
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
+enum ACT
+{
+    act_up      = 0,
+    act_down    = 1,
+    act_left    = 2,
+    act_right   = 3,
+    act_eat     = 4,
+    act_stay    = 5,
+    act_rand    = 6,
+};
+
+enum GRID
+{
+    grid_none   = 1,
+    grid_bean   = 2,
+    grid_wall   = 3,
+};
 
 void swapDna(int p1[], int p2[], int ret[], int size)
 {
@@ -62,10 +89,10 @@ void createMap(int mapinfo[MAP_SIZE][MAP_SIZE])
     //wall
     for(int i = 0; i < MAP_SIZE; ++i)
     {
-        mapinfo[0][i] = 3; 
-        mapinfo[11][i] = 3; 
-        mapinfo[i][0] = 3; 
-        mapinfo[i][11] = 3; 
+        mapinfo[0][i]   = grid_wall; 
+        mapinfo[11][i]  = grid_wall; 
+        mapinfo[i][0]   = grid_wall; 
+        mapinfo[i][11]  = grid_wall; 
     }
     //bean
     for(int i = 1; i <= 10; ++i)
@@ -78,15 +105,47 @@ void createMap(int mapinfo[MAP_SIZE][MAP_SIZE])
 }
 void showMap(int mapinfo[MAP_SIZE][MAP_SIZE])
 {
-    //show map
-    for(int i = 0; i < MAP_SIZE; ++i)
+    for(int y = MAP_SIZE - 1; y >= 0; --y)
     {
-        for(int j = 0; j < MAP_SIZE; ++j)
+        for(int x = 0; x < MAP_SIZE; ++x)
         {
-            std::cout << mapinfo[j][i] << " "; 
+            std::cout << "x" << x << "y" << y << ":" << mapinfo[y][x] << " "; 
         }
         std::cout << std::endl;
     }
+}
+
+int calScore(int mapinfo[MAP_SIZE][MAP_SIZE], int x, int y, int act)
+{
+  int grid = mapinfo[y][x];
+  if(act == act_rand) 
+  {
+    act = rand() % 4; 
+  }
+
+  switch(act)
+  {
+      case act_up: { grid = mapinfo[y + 1][x]; } break;
+      case act_down: { grid = mapinfo[y - 1][x]; } break;
+      case act_left: { grid = mapinfo[y][x - 1]; } break;
+      case act_right: { grid = mapinfo[y][x + 1]; } break;
+  }
+
+  if(act == act_eat && grid == grid_bean)
+  {
+      return 10; 
+  }
+
+  if(act == act_eat && grid == grid_none)
+  {
+      return -1; 
+  }
+
+  if(grid == grid_wall)
+  {
+      return -5; 
+  }
+  return 0;
 }
 
 int main()
@@ -146,15 +205,15 @@ int main()
     std::map<int, int> m_sindex;
     int indexCount = 0;
     int indexKey = 0;
-    for(int i = 1; i <= 3; ++i)
+    for(int i = grid_none; i <= grid_wall; ++i)
     {
-        for(int j = 1; j <= 3; ++j)
+        for(int j = grid_none; j <= grid_wall; ++j)
         {
-            for(int k = 1; k <= 3; ++k)
+            for(int k = grid_none; k <= grid_wall; ++k)
             {
-                for(int l = 1; l <= 3; ++l)
+                for(int l = grid_none; l <= grid_wall; ++l)
                 {
-                    for(int m = 1; m <= 3; ++m)
+                    for(int m = grid_none; m <= grid_wall; ++m)
                     {
                        indexCount++;  
                        indexKey = i * 10000 + j * 1000 + k * 100 + l * 10 + m; 
@@ -180,14 +239,33 @@ int main()
     showMap(m_mapinfo);
 
     //test pos info -> status
-    for(int i = 1; i < MAP_SIZE - 1; ++i)
+    /*
+    for(int j = MAP_SIZE - 2; j > 0; --j)
     {
-        for(int j = 1; j < MAP_SIZE - 1; ++j)
+        for(int i = 1; i < MAP_SIZE - 1; ++i)
         {
             int status = pos2status(j, i, m_mapinfo);
             //std::cout << status << " "; 
-            std::cout << m_sindex[status] << " "; 
+            std::cout << m_sindex[status] << "  "; 
         }
         std::cout << std::endl;
     }
+    */
+    
+    //test cal score
+    /*
+    int mup = 0;
+    mup = calScore(m_mapinfo, 1, 1, act_up);
+    std::cout << "act_up:" << mup << std::endl;
+    mup = calScore(m_mapinfo, 1, 1, act_down);
+    std::cout << "act_down:" << mup << std::endl;
+    mup = calScore(m_mapinfo, 1, 1, act_left);
+    std::cout << "act_left:" << mup << std::endl;
+    mup = calScore(m_mapinfo, 1, 1, act_right);
+    std::cout << "act_right:" << mup << std::endl;
+    mup = calScore(m_mapinfo, 1, 1, act_stay);
+    std::cout << "act_stay:" << mup << std::endl;
+    mup = calScore(m_mapinfo, 1, 1, act_eat);
+    std::cout << "act_eat:" << mup << std::endl;
+    */
 }

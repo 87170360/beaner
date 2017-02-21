@@ -6,7 +6,7 @@ Beaner::Beaner(void)
     srand (time(NULL));
     for(int i = 0; i < sizeof(m_dna) / sizeof(int); ++i)
     {
-        m_dna[i] =  rand() % 3; 
+        m_dna[i] =  rand() % BEHAVIOR; 
     }
 }
 
