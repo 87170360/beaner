@@ -57,6 +57,38 @@ int pos2status(int x, int y, int mapinfo[MAP_SIZE][MAP_SIZE])
    return up * 10000 + down * 1000 + left * 100 + right * 10 + cur;
 }
 
+void createMap(int mapinfo[MAP_SIZE][MAP_SIZE])
+{
+    //wall
+    for(int i = 0; i < MAP_SIZE; ++i)
+    {
+        mapinfo[0][i] = 3; 
+        mapinfo[11][i] = 3; 
+        mapinfo[i][0] = 3; 
+        mapinfo[i][11] = 3; 
+    }
+    //bean
+    for(int i = 1; i <= 10; ++i)
+    {
+        for(int j = 1; j <= 10; ++j)
+        {
+            mapinfo[j][i] = rand() % 2 + 1; 
+        }
+    }
+}
+void showMap(int mapinfo[MAP_SIZE][MAP_SIZE])
+{
+    //show map
+    for(int i = 0; i < MAP_SIZE; ++i)
+    {
+        for(int j = 0; j < MAP_SIZE; ++j)
+        {
+            std::cout << mapinfo[j][i] << " "; 
+        }
+        std::cout << std::endl;
+    }
+}
+
 int main()
 {
     srand(time(NULL));
@@ -110,19 +142,19 @@ int main()
        }
        */
 
-    //init status index, 0 none, 1 bean, 2 wall
+    //init status index, 1 none, 2 bean, 3 wall
     std::map<int, int> m_sindex;
     int indexCount = 0;
     int indexKey = 0;
-    for(int i = 0; i < 3; ++i)
+    for(int i = 1; i <= 3; ++i)
     {
-        for(int j = 0; j < 3; ++j)
+        for(int j = 1; j <= 3; ++j)
         {
-            for(int k = 0; k < 3; ++k)
+            for(int k = 1; k <= 3; ++k)
             {
-                for(int l = 0; l < 3; ++l)
+                for(int l = 1; l <= 3; ++l)
                 {
-                    for(int m = 0; m < 3; ++m)
+                    for(int m = 1; m <= 3; ++m)
                     {
                        indexCount++;  
                        indexKey = i * 10000 + j * 1000 + k * 100 + l * 10 + m; 
@@ -142,47 +174,20 @@ int main()
     std::cout << "size:" << m_sindex.size();
     */
 
-    //init map data 12 * 12,  y * x
+    //init map data 12 * 12,  y * x, 1 none, 2 bean, 3 wall
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
-    //wall
-    for(int i = 0; i < MAP_SIZE; ++i)
-    {
-        m_mapinfo[0][i] = 2; 
-        m_mapinfo[11][i] = 2; 
-        m_mapinfo[i][0] = 2; 
-        m_mapinfo[i][11] = 2; 
-    }
-    //bean
-    for(int i = 1; i <= 10; ++i)
-    {
-        for(int j = 1; j <= 10; ++j)
-        {
-            m_mapinfo[j][i] = rand() % 2; 
-        }
-    }
-     
-    //show map
-    /*
-    for(int i = 0; i < MAP_SIZE; ++i)
-    {
-        for(int j = 0; j < MAP_SIZE; ++j)
-        {
-            std::cout << m_mapinfo[j][i] << " "; 
-        }
-        std::cout << std::endl;
-    }
-    */
+    createMap(m_mapinfo);
+    showMap(m_mapinfo);
 
     //test pos info -> status
-    /*
     for(int i = 1; i < MAP_SIZE - 1; ++i)
     {
         for(int j = 1; j < MAP_SIZE - 1; ++j)
         {
             int status = pos2status(j, i, m_mapinfo);
+            //std::cout << status << " "; 
             std::cout << m_sindex[status] << " "; 
         }
         std::cout << std::endl;
     }
-    */
 }
