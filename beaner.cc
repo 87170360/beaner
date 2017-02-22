@@ -8,6 +8,8 @@ Beaner::Beaner(void)
     {
         m_dna[i] =  rand() % BEHAVIOR; 
     }
+    m_x = rand() % 10 + 1;
+    m_y = rand() % 10 + 1;
 }
 
 Beaner::~Beaner(void)

@@ -148,6 +148,60 @@ int calScore(int mapinfo[MAP_SIZE][MAP_SIZE], int x, int y, int act)
     return 0;
 }
 
+void calPos(int mapinfo[MAP_SIZE][MAP_SIZE], int& x, int& y, int act)
+{
+    int grid = mapinfo[y][x];
+    if(act == act_rand) 
+    {
+        act = rand() % 4; 
+    }
+
+    switch(act)
+    {
+        case act_up:    { grid = mapinfo[y + 1][x]; } break;
+        case act_down:  { grid = mapinfo[y - 1][x]; } break;
+        case act_left:  { grid = mapinfo[y][x - 1]; } break;
+        case act_right: { grid = mapinfo[y][x + 1]; } break;
+    }
+
+    if(grid != grid_wall)
+    {
+        switch(act)
+        {
+            case act_up:    { ++y; } break;
+            case act_down:  { --y; } break;
+            case act_left:  { --x; } break;
+            case act_right: { ++x; } break;
+        }
+    }
+}
+
+void testCalPos(int mapinfo[MAP_SIZE][MAP_SIZE])
+{
+    int x = 1, y = 1;
+    std::cout << "x:" << x << " y:" << y << std::endl;
+
+    calPos(mapinfo, x, y, act_up); 
+    std::cout << "up" << "x:" << x << " y:" << y << std::endl;
+    x = 1;
+    y = 1;
+
+    calPos(mapinfo, x, y, act_down); 
+    std::cout << "down" << "x:" << x << " y:" << y << std::endl;
+    x = 1;
+    y = 1;
+
+    calPos(mapinfo, x, y, act_left); 
+    std::cout << "left" << "x:" << x << " y:" << y << std::endl;
+    x = 1;
+    y = 1;
+
+    calPos(mapinfo, x, y, act_right); 
+    std::cout << "right" << "x:" << x << " y:" << y << std::endl;
+    x = 1;
+    y = 1;
+}
+
 void initStatusIndex(std::map<int, int>& sindex)
 {
     int indexCount = 0;
@@ -281,5 +335,5 @@ int main()
 
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
     createMap(m_mapinfo);
-    //showMap(m_mapinfo);
+    showMap(m_mapinfo);
 }
