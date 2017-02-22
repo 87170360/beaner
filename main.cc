@@ -6,14 +6,14 @@
 using std::map;
 
 /*
- y
- ^
- |
- |
- |
- -------------> x
- (0,0)
- */
+   y
+   ^
+   |
+   |
+   |
+   -------------> x
+   (0,0)
+   */
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
@@ -76,12 +76,12 @@ void sortBeaner(std::vector<Beaner>& all)
 
 int pos2status(int x, int y, int mapinfo[MAP_SIZE][MAP_SIZE])
 {
-   int up       = mapinfo[y - 1][x]; 
-   int down     = mapinfo[y + 1][x]; 
-   int left     = mapinfo[y][x - 1]; 
-   int right    = mapinfo[y][x + 1]; 
-   int cur      = mapinfo[y][x]; 
-   return up * 10000 + down * 1000 + left * 100 + right * 10 + cur;
+    int up       = mapinfo[y - 1][x]; 
+    int down     = mapinfo[y + 1][x]; 
+    int left     = mapinfo[y][x - 1]; 
+    int right    = mapinfo[y][x + 1]; 
+    int cur      = mapinfo[y][x]; 
+    return up * 10000 + down * 1000 + left * 100 + right * 10 + cur;
 }
 
 void createMap(int mapinfo[MAP_SIZE][MAP_SIZE])
@@ -117,52 +117,147 @@ void showMap(int mapinfo[MAP_SIZE][MAP_SIZE])
 
 int calScore(int mapinfo[MAP_SIZE][MAP_SIZE], int x, int y, int act)
 {
-  int grid = mapinfo[y][x];
-  if(act == act_rand) 
-  {
-    act = rand() % 4; 
-  }
+    int grid = mapinfo[y][x];
+    if(act == act_rand) 
+    {
+        act = rand() % 4; 
+    }
 
-  switch(act)
-  {
-      case act_up: { grid = mapinfo[y + 1][x]; } break;
-      case act_down: { grid = mapinfo[y - 1][x]; } break;
-      case act_left: { grid = mapinfo[y][x - 1]; } break;
-      case act_right: { grid = mapinfo[y][x + 1]; } break;
-  }
+    switch(act)
+    {
+        case act_up: { grid = mapinfo[y + 1][x]; } break;
+        case act_down: { grid = mapinfo[y - 1][x]; } break;
+        case act_left: { grid = mapinfo[y][x - 1]; } break;
+        case act_right: { grid = mapinfo[y][x + 1]; } break;
+    }
 
-  if(act == act_eat && grid == grid_bean)
-  {
-      return 10; 
-  }
+    if(act == act_eat && grid == grid_bean)
+    {
+        return 10; 
+    }
 
-  if(act == act_eat && grid == grid_none)
-  {
-      return -1; 
-  }
+    if(act == act_eat && grid == grid_none)
+    {
+        return -1; 
+    }
 
-  if(grid == grid_wall)
-  {
-      return -5; 
-  }
-  return 0;
+    if(grid == grid_wall)
+    {
+        return -5; 
+    }
+    return 0;
+}
+
+void initStatusIndex(std::map<int, int>& sindex)
+{
+    int indexCount = 0;
+    int indexKey = 0;
+    for(int i = grid_none; i <= grid_wall; ++i)
+    {
+        for(int j = grid_none; j <= grid_wall; ++j)
+        {
+            for(int k = grid_none; k <= grid_wall; ++k)
+            {
+                for(int l = grid_none; l <= grid_wall; ++l)
+                {
+                    for(int m = grid_none; m <= grid_wall; ++m)
+                    {
+                        indexCount++;  
+                        indexKey = i * 10000 + j * 1000 + k * 100 + l * 10 + m; 
+                        sindex[indexKey] = indexCount;
+                    }
+                }
+            }
+        }
+    }
+    /*
+       for(std::map<int, int>::iterator it = sindex.begin(); it != sindex.end(); ++it)
+       {
+       std::cout << "key:" << it->first << " , value:" << it->second << " "; 
+       }
+       std::cout << std::endl;
+       std::cout << "size:" << sindex.size() << std::endl;
+       */
+}
+
+void testSwapDna(void)
+{
+    int x[] = {1,2,3,4,5,6};
+    int y[] = {11,22,33,44,55,66};
+    int b[] = {0,0,0,0,0,0};
+    swapDna(x, y, b, 6);
+    for(int i = 0; i < sizeof(b) / sizeof(int); ++i)
+    {
+        std::cout << b[i] << " " ;
+    }
+    std::cout << std::endl;
+}
+
+void testWeightSelect(void)
+{
+    //weight list
+    int tmp_weight[BEANER_NUM];
+    //total weight
+    int tmp_totalWeight = 0;
+
+    for(int i = 0; i < BEANER_NUM; ++i)
+    {
+        tmp_weight[i] = BEANER_NUM - i;
+        tmp_totalWeight += tmp_weight[i];
+    }
+
+    std::map<int, int> tmp_testweight;
+    for(int i = 0; i < BEANER_NUM; ++i)
+    {
+        tmp_testweight[tmp_weight[i]] = 0;
+    }
+
+    for(int i = 0; i < 100000000; ++i)
+    {
+        int val = weightSelect(tmp_weight, BEANER_NUM, tmp_totalWeight); 
+        tmp_testweight[tmp_weight[val]] += 1;
+    }
+
+    for(int i = 0; i < BEANER_NUM; ++i)
+    {
+        std::cout << tmp_weight[i] << ":" << tmp_testweight[tmp_weight[i]] / 1000000.0f << "% ";
+    }
+}
+
+void testPos2StatusIndex(int mapinfo[MAP_SIZE][MAP_SIZE], std::map<int, int>& sindex)
+{
+    for(int j = MAP_SIZE - 2; j > 0; --j)
+    {
+        for(int i = 1; i < MAP_SIZE - 1; ++i)
+        {
+            int status = pos2status(j, i, mapinfo);
+            //std::cout << status << " "; 
+            std::cout << sindex[status] << "  "; 
+        }
+        std::cout << std::endl;
+    }
+}
+
+void testCalScore(int mapinfo[MAP_SIZE][MAP_SIZE])
+{
+    int mup = 0;
+    mup = calScore(mapinfo, 1, 1, act_up);
+    std::cout << "act_up:" << mup << std::endl;
+    mup = calScore(mapinfo, 1, 1, act_down);
+    std::cout << "act_down:" << mup << std::endl;
+    mup = calScore(mapinfo, 1, 1, act_left);
+    std::cout << "act_left:" << mup << std::endl;
+    mup = calScore(mapinfo, 1, 1, act_right);
+    std::cout << "act_right:" << mup << std::endl;
+    mup = calScore(mapinfo, 1, 1, act_stay);
+    std::cout << "act_stay:" << mup << std::endl;
+    mup = calScore(mapinfo, 1, 1, act_eat);
+    std::cout << "act_eat:" << mup << std::endl;
 }
 
 int main()
 {
     srand(time(NULL));
-    /* test swapDna
-       int x[] = {1,2,3,4,5,6};
-       int y[] = {11,22,33,44,55,66};
-       int b[] = {0,0,0,0,0,0};
-       swapDna(x, y, b, 6);
-       for(int i = 0; i < sizeof(b) / sizeof(int); ++i)
-       {
-       std::cout << b[i] << " " ;
-       }
-       std::cout << std::endl;
-       */
-
 
     //all beaner
     std::vector<Beaner> m_all;
@@ -181,91 +276,10 @@ int main()
 
     sortBeaner(m_all);
 
-    //test weightSelect
-    /*
-       std::map<int, int> m_testweight;
-       for(int i = 0; i < BEANER_NUM; ++i)
-       {
-       m_testweight[m_weight[i]] = 0;
-       }
-
-       for(int i = 0; i < 100000000; ++i)
-       {
-       int val = weightSelect(m_weight, BEANER_NUM, m_totalWeight); 
-       m_testweight[m_weight[val]] += 1;
-       }
-
-       for(int i = 0; i < BEANER_NUM; ++i)
-       {
-       std::cout << m_weight[i] << ":" << m_testweight[m_weight[i]] / 1000000.0f << "% ";
-       }
-       */
-
-    //init status index, 1 none, 2 bean, 3 wall
     std::map<int, int> m_sindex;
-    int indexCount = 0;
-    int indexKey = 0;
-    for(int i = grid_none; i <= grid_wall; ++i)
-    {
-        for(int j = grid_none; j <= grid_wall; ++j)
-        {
-            for(int k = grid_none; k <= grid_wall; ++k)
-            {
-                for(int l = grid_none; l <= grid_wall; ++l)
-                {
-                    for(int m = grid_none; m <= grid_wall; ++m)
-                    {
-                       indexCount++;  
-                       indexKey = i * 10000 + j * 1000 + k * 100 + l * 10 + m; 
-                       m_sindex[indexKey] = indexCount;
-                    }
-                }
-            }
-        }
-    }
+    initStatusIndex(m_sindex);
 
-    /*
-    for(std::map<int, int>::iterator it = m_sindex.begin(); it != m_sindex.end(); ++it)
-    {
-        std::cout << "key:" << it->first << " , value:" << it->second << " "; 
-    }
-    std::cout << std::endl;
-    std::cout << "size:" << m_sindex.size();
-    */
-
-    //init map data 12 * 12,  y * x, 1 none, 2 bean, 3 wall
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
     createMap(m_mapinfo);
-    showMap(m_mapinfo);
-
-    //test pos info -> status
-    /*
-    for(int j = MAP_SIZE - 2; j > 0; --j)
-    {
-        for(int i = 1; i < MAP_SIZE - 1; ++i)
-        {
-            int status = pos2status(j, i, m_mapinfo);
-            //std::cout << status << " "; 
-            std::cout << m_sindex[status] << "  "; 
-        }
-        std::cout << std::endl;
-    }
-    */
-    
-    //test cal score
-    /*
-    int mup = 0;
-    mup = calScore(m_mapinfo, 1, 1, act_up);
-    std::cout << "act_up:" << mup << std::endl;
-    mup = calScore(m_mapinfo, 1, 1, act_down);
-    std::cout << "act_down:" << mup << std::endl;
-    mup = calScore(m_mapinfo, 1, 1, act_left);
-    std::cout << "act_left:" << mup << std::endl;
-    mup = calScore(m_mapinfo, 1, 1, act_right);
-    std::cout << "act_right:" << mup << std::endl;
-    mup = calScore(m_mapinfo, 1, 1, act_stay);
-    std::cout << "act_stay:" << mup << std::endl;
-    mup = calScore(m_mapinfo, 1, 1, act_eat);
-    std::cout << "act_eat:" << mup << std::endl;
-    */
+    //showMap(m_mapinfo);
 }

@@ -4,6 +4,7 @@ DESTDIR_TARGET = m
 
 
 all: $(DESTDIR_TARGET)
+	ctags -R
 	./$(DESTDIR_TARGET)
 
 $(DESTDIR_TARGET): $(OBJECTS)
