@@ -13,7 +13,7 @@ using std::map;
    |
    -------------> x
    (0,0)
-   */
+*/
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
