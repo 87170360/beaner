@@ -2,6 +2,9 @@
 #include<map>
 #include<vector>
 #include <algorithm>
+#include <iostream> // library that contain basic input/output functions
+#include <fstream>  // library that contains file input/output functions
+using namespace std;
 #include "beaner.h"
 using std::map;
 
@@ -13,7 +16,7 @@ using std::map;
    |
    -------------> x
    (0,0)
-*/
+   */
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
@@ -309,6 +312,52 @@ void testCalScore(int mapinfo[MAP_SIZE][MAP_SIZE])
     std::cout << "act_eat:" << mup << std::endl;
 }
 
+void writeArray(void)
+{
+    //char array[] = {'H','e','l','l','o',' ','W','o','r','l','d','!','\0'}; //array to write into file 
+    int array[] = {1, 2, 3, 4, 5};
+    ofstream fout("test.txt"); 
+    /*checking whether file could be opened or not. If file does not exist or don't have write permissions, file
+     *   stream could not be opened.*/
+    if(fout.is_open())
+    {
+        //file opened successfully so we are here
+        cout << "File Opened successfully!!!. Writing data from array to file" << endl;
+
+        for(int i = 0; i < sizeof(array) / sizeof(int); i++)
+        {
+            fout << array[i]; //writing ith character of array in the file
+            fout << " ";
+        }
+        cout << "Array data successfully saved into the file test.txt" << endl;
+    }
+    else //file could not be opened
+    {
+        cout << "File could not be opened." << endl;
+    }
+    fout.close();
+}
+
+void readArray()
+{
+    ifstream file("test.txt");
+    if(file.is_open())
+    {
+        string myArray[5];
+
+        for(int i = 0; i < 5; ++i)
+        {
+            file >> myArray[i];
+            cout << myArray[i] << endl;
+        }
+    }
+    else //file could not be opened
+    {
+        cout << "File could not be opened." << endl;
+    }
+    file.close();
+}
+
 int main()
 {
     srand(time(NULL));
@@ -335,5 +384,8 @@ int main()
 
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
     createMap(m_mapinfo);
-    showMap(m_mapinfo);
+    //showMap(m_mapinfo);
+
+    //writeArray();
+    //readArray();
 }
