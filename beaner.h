@@ -10,6 +10,7 @@ const int BEHAVIOR = 7;
 class Beaner
 {
     public:
+        //Beaner(int sand);
         Beaner(void);
         ~Beaner(void);
 

@@ -20,6 +20,11 @@ using std::map;
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
+const int GENERATION = 1;
+const int RACE = 1;
+const int DAY = 100;
+
+
 enum ACT
 {
     act_up      = 0,
@@ -97,12 +102,26 @@ void createMap(int mapinfo[MAP_SIZE][MAP_SIZE])
         mapinfo[i][0]   = grid_wall; 
         mapinfo[i][11]  = grid_wall; 
     }
+
     //bean
     for(int i = 1; i <= 10; ++i)
     {
         for(int j = 1; j <= 10; ++j)
         {
-            mapinfo[j][i] = rand() % 2 + 1; 
+            mapinfo[j][i] = grid_none; 
+        }
+    }
+
+    int beannum = 50;
+    int x = 0, y = 0;
+    while(beannum > 0)
+    {
+        x = rand() % 10 + 1;
+        y = rand() % 10 + 1;
+        if(mapinfo[y][x] == grid_none)
+        {
+            mapinfo[y][x] = grid_bean;
+            --beannum;
         }
     }
 }
@@ -149,6 +168,15 @@ int calScore(int mapinfo[MAP_SIZE][MAP_SIZE], int x, int y, int act)
         return -5; 
     }
     return 0;
+}
+
+void calMap(int mapinfo[MAP_SIZE][MAP_SIZE], int& x, int& y, int act)
+{
+    int grid = mapinfo[y][x];
+    if(act == act_eat && grid == grid_bean)
+    {
+        mapinfo[y][x] = grid_none; 
+    }
 }
 
 void calPos(int mapinfo[MAP_SIZE][MAP_SIZE], int& x, int& y, int act)
@@ -342,7 +370,6 @@ void testWriteArray(void)
     writeArray(array, sizeof(array) / sizeof(int), "1.txt");
 }
 
-
 void readArray(int array[], int size, const char * filename)
 {
     ifstream file(filename);
@@ -377,21 +404,58 @@ int main()
     int m_weight[BEANER_NUM];
     //total weight
     int m_totalWeight = 0;
+
+
     for(int i = 0; i < BEANER_NUM; ++i)
     {
         Beaner bean = Beaner();
-        bean.m_score = i;
         m_all.push_back(bean);
         m_weight[i] = BEANER_NUM - i;
         m_totalWeight += m_weight[i];
     }
 
-    sortBeaner(m_all);
-
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
 
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
-    createMap(m_mapinfo);
-    //showMap(m_mapinfo);
+
+    int status = 0;
+    int act_index = 0;
+    int act = 0;
+    for(int i = 0; i < GENERATION; ++i)    
+    {
+        createMap(m_mapinfo);
+        showMap(m_mapinfo);
+        for(int j = 0; j < BEANER_NUM; ++j)
+        {
+            Beaner& bean = m_all[j];
+            for(int k = 0; k < RACE; ++k)
+            {
+                for(int l = 0; l < DAY; ++l)
+                {
+                    status = pos2status(bean.m_y, bean.m_x, m_mapinfo);
+                    if(m_sindex.find(status) == m_sindex.end())
+                    {
+                        cout << "status:" << status << "not found!" << endl;
+                        break;
+                    }
+                    //cout << "status:" << status << endl;
+                    act_index = m_sindex[status]; 
+                    if(act_index < 0 || act_index >= 243)
+                    {
+                        cout << "act_index:" << act_index << endl;
+                        break;
+                    }
+                    //cout << "act_index:" << act_index << endl;
+
+                    act = bean.m_dna[act_index];
+                    //cout << "day: " << l << " x:" << bean.m_x << " y:" << bean.m_y << " act:" << act << endl;
+                    bean.m_score += calScore(m_mapinfo, bean.m_x, bean.m_y, act);
+                    calMap(m_mapinfo, bean.m_x, bean.m_y, act);
+                    calPos(m_mapinfo, bean.m_x, bean.m_y, act);
+                }
+            }
+            cout << "bean:" << j << " total score:" << bean.m_score << endl;
+        }
+    }
 }
