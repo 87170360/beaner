@@ -312,11 +312,9 @@ void testCalScore(int mapinfo[MAP_SIZE][MAP_SIZE])
     std::cout << "act_eat:" << mup << std::endl;
 }
 
-void writeArray(void)
+void writeArray(int array[], int size, const char * filename)
 {
-    //char array[] = {'H','e','l','l','o',' ','W','o','r','l','d','!','\0'}; //array to write into file 
-    int array[] = {1, 2, 3, 4, 5};
-    ofstream fout("test.txt"); 
+    ofstream fout(filename); 
     /*checking whether file could be opened or not. If file does not exist or don't have write permissions, file
      *   stream could not be opened.*/
     if(fout.is_open())
@@ -324,38 +322,49 @@ void writeArray(void)
         //file opened successfully so we are here
         cout << "File Opened successfully!!!. Writing data from array to file" << endl;
 
-        for(int i = 0; i < sizeof(array) / sizeof(int); i++)
+        for(int i = 0; i < size; i++)
         {
             fout << array[i]; //writing ith character of array in the file
             fout << " ";
         }
-        cout << "Array data successfully saved into the file test.txt" << endl;
+        cout << "Array data successfully saved into the file " << filename << endl;
     }
     else //file could not be opened
     {
-        cout << "File could not be opened." << endl;
+        cout << "File " << filename << " could not be opened." << endl;
     }
     fout.close();
 }
 
-void readArray()
+void testWriteArray(void)
 {
-    ifstream file("test.txt");
+    int array[] = {111,222,333,444,5555};
+    writeArray(array, sizeof(array) / sizeof(int), "1.txt");
+}
+
+
+void readArray(int array[], int size, const char * filename)
+{
+    ifstream file(filename);
     if(file.is_open())
     {
-        string myArray[5];
-
-        for(int i = 0; i < 5; ++i)
+        for(int i = 0; i < size; ++i)
         {
-            file >> myArray[i];
-            cout << myArray[i] << endl;
+            file >> array[i];
+            cout << array[i] << endl;
         }
     }
     else //file could not be opened
     {
-        cout << "File could not be opened." << endl;
+        cout << "File" << filename << " could not be opened." << endl;
     }
     file.close();
+}
+
+void testReadArray(void)
+{
+    int array[5] = {};
+    readArray(array, 5, "1.txt");
 }
 
 int main()
@@ -385,7 +394,4 @@ int main()
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
     createMap(m_mapinfo);
     //showMap(m_mapinfo);
-
-    //writeArray();
-    //readArray();
 }
