@@ -20,8 +20,8 @@ using std::map;
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
-const int GENERATION = 1;
-const int RACE = 1;
+const int GENERATION = 1000;
+const int RACE = 1000;
 const int DAY = 100;
 
 
@@ -422,15 +422,18 @@ int main()
     int status = 0;
     int act_index = 0;
     int act = 0;
+    int father = 0;
+    int mother = 0;
+    std::vector<Beaner> m_new;
     for(int i = 0; i < GENERATION; ++i)    
     {
-        createMap(m_mapinfo);
-        showMap(m_mapinfo);
+        //showMap(m_mapinfo);
         for(int j = 0; j < BEANER_NUM; ++j)
         {
             Beaner& bean = m_all[j];
             for(int k = 0; k < RACE; ++k)
             {
+                createMap(m_mapinfo);
                 for(int l = 0; l < DAY; ++l)
                 {
                     status = pos2status(bean.m_y, bean.m_x, m_mapinfo);
@@ -455,7 +458,29 @@ int main()
                     calPos(m_mapinfo, bean.m_x, bean.m_y, act);
                 }
             }
-            cout << "bean:" << j << " total score:" << bean.m_score << endl;
+
+            bean.m_score /= RACE;
+            //cout << "bean:" << j << " average score:" << bean.m_score << endl;
         }
+
+        sortBeaner(m_all);
+        /*
+        for(int p = 0; p < 200; ++p)
+        {
+            cout << "score: " << m_all[p].m_score << endl; 
+        }
+        */
+        cout << "genaration:" << i << " score:" << m_all[0].m_score << endl;
+        
+        m_new.clear();
+        for(int o = 0; o < BEANER_NUM; ++o)
+        {
+            father = weightSelect(m_weight, BEANER_NUM, m_totalWeight); 
+            mother = weightSelect(m_weight, BEANER_NUM, m_totalWeight); 
+            Beaner child = Beaner();
+            swapDna(m_all[father].m_dna, m_all[mother].m_dna, child.m_dna, DNASIZE);
+            m_new.push_back(child);
+        }
+        m_all = m_new;
     }
 }
