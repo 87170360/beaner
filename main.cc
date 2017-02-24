@@ -46,8 +46,8 @@ enum GRID
 void swapDna(int p1[], int p2[], int ret[], int size)
 {
     std::copy(p2, p2 + size, ret);
-    //int point = rand() % size + 1;
-    int point = size / 2;
+    int point = rand() % size + 1;
+   // int point = size / 2;
     //std::cout << "point:" << point << std::endl;
     std::copy(p1, p1 + point, ret);
 
@@ -468,6 +468,24 @@ void showDNA(Beaner& beaner)
     cout << endl;
 }
 
+void checkSameDNA(Beaner& b1, Beaner& b2)
+{
+    bool ret = true;
+    for(int i = 0; i < DNASIZE; ++i)
+    {
+        if(b1.m_dna[i] != b2.m_dna[i])
+        {
+            ret = false;
+        }
+    }
+    
+    if(ret)
+    {
+        cout << "DNA same" << endl;
+    }
+}
+
+
 int main()
 {
     srand(time(NULL));
@@ -514,8 +532,8 @@ int main()
         }
         sortBeaner(m_all);
         cout << "generation:" << k <<" score: " << m_all[0].m_score << endl; 
-        cout << "generation:" << k <<" score: " << m_all[1].m_score << endl; 
-        cout << "generation:" << k <<" score: " << m_all[2].m_score << endl; 
+        //checkSameDNA(m_all[0], m_all[1]);
+        //checkSameDNA(m_all[2], m_all[1]);
 
         m_new.clear();
         for(int j = 0; j < BEANER_NUM; ++j)
