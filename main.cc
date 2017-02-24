@@ -21,7 +21,7 @@ using std::map;
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
 const int GENERATION = 1000;
-const int RACE = 1000;
+const int RACE = 1;
 const int DAY = 100;
 
 
@@ -46,9 +46,18 @@ enum GRID
 void swapDna(int p1[], int p2[], int ret[], int size)
 {
     std::copy(p2, p2 + size, ret);
-    int point = rand() % size + 1;
+    //int point = rand() % size + 1;
+    int point = size / 2;
     //std::cout << "point:" << point << std::endl;
     std::copy(p1, p1 + point, ret);
+
+    point = rand() % size;
+    //std::cout << "point:" << point << std::endl;
+    ret[point] = rand() % BEHAVIOR;
+
+    point = rand() % size;
+    //std::cout << "point:" << point << std::endl;
+    ret[point] = rand() % BEHAVIOR;
 
     point = rand() % size;
     //std::cout << "point:" << point << std::endl;
@@ -132,9 +141,37 @@ void showMap(int mapinfo[MAP_SIZE][MAP_SIZE])
         for(int x = 0; x < MAP_SIZE; ++x)
         {
             std::cout << "x" << x << "y" << y << ":" << mapinfo[y][x] << " "; 
+            //std::cout << mapinfo[y][x] << " "; 
         }
         std::cout << std::endl;
     }
+}
+
+void copyMap(int src[MAP_SIZE][MAP_SIZE], int des[MAP_SIZE][MAP_SIZE])
+{
+    for(int i = 0; i < MAP_SIZE; ++i)
+    {
+        for(int j = 0; j < MAP_SIZE; ++j)
+        {
+            des[i][j] = src[i][j];
+        }
+    }
+}
+
+void countBean(int mapinfo[MAP_SIZE][MAP_SIZE])
+{
+    int count = 0;
+    for(int i = 0; i < MAP_SIZE; ++i)
+    {
+        for(int j = 0; j < MAP_SIZE; ++j)
+        {
+            if(mapinfo[j][i] == grid_bean) 
+            {
+                ++count; 
+            }
+        }
+    }
+    cout << "bean num:" << count << endl;
 }
 
 int calScore(int mapinfo[MAP_SIZE][MAP_SIZE], int x, int y, int act)
@@ -394,6 +431,43 @@ void testReadArray(void)
     readArray(array, 5, "1.txt");
 }
 
+void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex, Beaner& beaner)
+{
+    int status = pos2status(beaner.m_y, beaner.m_x, mapinfo);
+
+    std::map<int, int>::const_iterator iter = sindex.find(status);
+    if(iter == sindex.end())
+    {
+        cout << "status:" << status << "not found!" << endl;
+        return;
+    }
+
+    //cout << "status:" << status << endl;
+    int act_index = iter->second; 
+    if(act_index < 0 || act_index >= DNASIZE)
+    {
+        cout << "outof range, act_index:" << act_index << endl;
+        return;
+    }
+    //cout << "act_index:" << act_index << endl;
+
+    int act = beaner.m_dna[act_index];
+    //   cout << "dayAction " << "x:" << beaner.m_x << " y:" << beaner.m_y << " act:" << act << endl;
+    beaner.m_score += calScore(mapinfo, beaner.m_x, beaner.m_y, act);
+    calMap(mapinfo, beaner.m_x, beaner.m_y, act);
+    calPos(mapinfo, beaner.m_x, beaner.m_y, act);
+    //    cout << "score:" << beaner.m_score << endl;
+}
+
+void showDNA(Beaner& beaner)
+{
+    for(int i = 0; i < DNASIZE; ++i)
+    {
+        cout << beaner.m_dna[i] << " "; 
+    }
+    cout << endl;
+}
+
 int main()
 {
     srand(time(NULL));
@@ -418,69 +492,42 @@ int main()
     initStatusIndex(m_sindex);
 
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
+    int m_mapbk[MAP_SIZE][MAP_SIZE];
+    createMap(m_mapbk);
+    copyMap(m_mapbk, m_mapinfo);
 
-    int status = 0;
-    int act_index = 0;
-    int act = 0;
-    int father = 0;
-    int mother = 0;
     std::vector<Beaner> m_new;
-    for(int i = 0; i < GENERATION; ++i)    
+    // showMap(m_mapinfo);
+    for(int k = 0; k < GENERATION; ++k)
     {
-        //showMap(m_mapinfo);
         for(int j = 0; j < BEANER_NUM; ++j)
         {
-            Beaner& bean = m_all[j];
-            for(int k = 0; k < RACE; ++k)
+            for(int r = 0; r < RACE; ++r)
             {
-                createMap(m_mapinfo);
-                for(int l = 0; l < DAY; ++l)
+                copyMap(m_mapbk, m_mapinfo);
+                for(int i = 0; i < DAY; ++i)
                 {
-                    status = pos2status(bean.m_y, bean.m_x, m_mapinfo);
-                    if(m_sindex.find(status) == m_sindex.end())
-                    {
-                        cout << "status:" << status << "not found!" << endl;
-                        break;
-                    }
-                    //cout << "status:" << status << endl;
-                    act_index = m_sindex[status]; 
-                    if(act_index < 0 || act_index >= 243)
-                    {
-                        cout << "act_index:" << act_index << endl;
-                        break;
-                    }
-                    //cout << "act_index:" << act_index << endl;
-
-                    act = bean.m_dna[act_index];
-                    //cout << "day: " << l << " x:" << bean.m_x << " y:" << bean.m_y << " act:" << act << endl;
-                    bean.m_score += calScore(m_mapinfo, bean.m_x, bean.m_y, act);
-                    calMap(m_mapinfo, bean.m_x, bean.m_y, act);
-                    calPos(m_mapinfo, bean.m_x, bean.m_y, act);
+                    dayAction(m_mapinfo, m_sindex, m_all[j]);
                 }
             }
-
-            bean.m_score /= RACE;
-            //cout << "bean:" << j << " average score:" << bean.m_score << endl;
+            m_all[j].m_score /= RACE; 
         }
-
         sortBeaner(m_all);
-        /*
-        for(int p = 0; p < 200; ++p)
-        {
-            cout << "score: " << m_all[p].m_score << endl; 
-        }
-        */
-        cout << "genaration:" << i << " score:" << m_all[0].m_score << endl;
-        
+        cout << "generation:" << k <<" score: " << m_all[0].m_score << endl; 
+        cout << "generation:" << k <<" score: " << m_all[1].m_score << endl; 
+        cout << "generation:" << k <<" score: " << m_all[2].m_score << endl; 
+
         m_new.clear();
-        for(int o = 0; o < BEANER_NUM; ++o)
+        for(int j = 0; j < BEANER_NUM; ++j)
         {
-            father = weightSelect(m_weight, BEANER_NUM, m_totalWeight); 
-            mother = weightSelect(m_weight, BEANER_NUM, m_totalWeight); 
+            int top1 = weightSelect(m_weight, BEANER_NUM, m_totalWeight);
+            int top2 = weightSelect(m_weight, BEANER_NUM, m_totalWeight);
             Beaner child = Beaner();
-            swapDna(m_all[father].m_dna, m_all[mother].m_dna, child.m_dna, DNASIZE);
+            swapDna(m_all[top1].m_dna, m_all[top2].m_dna, child.m_dna, DNASIZE);
             m_new.push_back(child);
         }
+
+        m_all.clear();
         m_all = m_new;
     }
 }

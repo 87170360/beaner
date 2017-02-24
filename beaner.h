@@ -16,7 +16,7 @@ class Beaner
 
     public:
         int m_dna[DNASIZE];
-        int m_score;
+        float m_score;
         int m_x;
         int m_y;
 };
