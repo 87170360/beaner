@@ -20,7 +20,7 @@ using std::map;
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
-const int GENERATION = 1000;
+const int GENERATION = 10000;
 const int RACE = 1;
 const int DAY = 100;
 
@@ -47,7 +47,7 @@ void swapDna(int p1[], int p2[], int ret[], int size)
 {
     std::copy(p2, p2 + size, ret);
     int point = rand() % size + 1;
-   // int point = size / 2;
+    // int point = size / 2;
     //std::cout << "point:" << point << std::endl;
     std::copy(p1, p1 + point, ret);
 
@@ -453,7 +453,19 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
 
     int act = beaner.m_dna[act_index];
     //   cout << "dayAction " << "x:" << beaner.m_x << " y:" << beaner.m_y << " act:" << act << endl;
-    beaner.m_score += calScore(mapinfo, beaner.m_x, beaner.m_y, act);
+    int score = calScore(mapinfo, beaner.m_x, beaner.m_y, act);
+    if(score <= 0)
+    {
+        int nact = 0;
+        do
+        {
+            nact = rand() % BEHAVIOR; 
+        }
+        while(nact == act);
+
+        beaner.m_dna[act_index] = nact; 
+    }
+    beaner.m_score += score;
     calMap(mapinfo, beaner.m_x, beaner.m_y, act);
     calPos(mapinfo, beaner.m_x, beaner.m_y, act);
     //    cout << "score:" << beaner.m_score << endl;
@@ -478,7 +490,7 @@ void checkSameDNA(Beaner& b1, Beaner& b2)
             ret = false;
         }
     }
-    
+
     if(ret)
     {
         cout << "DNA same" << endl;
