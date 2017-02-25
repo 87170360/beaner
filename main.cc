@@ -21,8 +21,8 @@ using std::map;
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
 const int GENERATION = 10000;
-const int RACE = 1;
-const int DAY = 100;
+const int RACE = 1000;
+const int DAY = 200;
 
 
 enum ACT
@@ -63,7 +63,7 @@ void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
     }
 }
 
-int weightSelect(int weight[], int size, int total)
+int weightSelect(const std::vector<int>& weight, int size, int total)
 {
     int pick = rand() % total;
     //std::cout << "pick:" << pick << "total:" << total;
@@ -79,6 +79,23 @@ int weightSelect(int weight[], int size, int total)
     //std::cout << "not found weight!" << std::endl;
     return 0;
 }
+
+void selectParent(const std::vector<Beaner>& all, int& father, int& mother)
+{
+    std::vector<int> weight;
+    int total = 0;
+    for(std::vector<Beaner>::const_iterator it = all.begin(); it != all.end(); ++it)
+    {
+        weight.push_back((*it).m_score + 2000); 
+        total += (*it).m_score + 2000;
+    }
+
+    int size = weight.size();
+
+    father = weightSelect(weight, size, total);
+    mother = weightSelect(weight, size, total);
+}
+
 
 bool compareBeaner(const Beaner& a, const Beaner& b)
 {
@@ -320,37 +337,6 @@ void testSwapDna(void)
     std::cout << std::endl;
 }
 
-void testWeightSelect(void)
-{
-    //weight list
-    int tmp_weight[BEANER_NUM];
-    //total weight
-    int tmp_totalWeight = 0;
-
-    for(int i = 0; i < BEANER_NUM; ++i)
-    {
-        tmp_weight[i] = BEANER_NUM - i;
-        tmp_totalWeight += tmp_weight[i];
-    }
-
-    std::map<int, int> tmp_testweight;
-    for(int i = 0; i < BEANER_NUM; ++i)
-    {
-        tmp_testweight[tmp_weight[i]] = 0;
-    }
-
-    for(int i = 0; i < 100000000; ++i)
-    {
-        int val = weightSelect(tmp_weight, BEANER_NUM, tmp_totalWeight); 
-        tmp_testweight[tmp_weight[val]] += 1;
-    }
-
-    for(int i = 0; i < BEANER_NUM; ++i)
-    {
-        std::cout << tmp_weight[i] << ":" << tmp_testweight[tmp_weight[i]] / 1000000.0f << "% ";
-    }
-}
-
 void testPos2StatusIndex(int mapinfo[MAP_SIZE][MAP_SIZE], std::map<int, int>& sindex)
 {
     for(int j = MAP_SIZE - 2; j > 0; --j)
@@ -507,23 +493,11 @@ int main()
 {
     srand(time(NULL));
 
-    testSwapDna();
-    return 0;
-
     //all beaner
     std::vector<Beaner> m_all;
-    //weight list
-    int m_weight[BEANER_NUM];
-    //total weight
-    int m_totalWeight = 0;
-
-
     for(int i = 0; i < BEANER_NUM; ++i)
     {
-        Beaner bean = Beaner();
-        m_all.push_back(bean);
-        m_weight[i] = BEANER_NUM - i;
-        m_totalWeight += m_weight[i];
+        m_all.push_back(Beaner());
     }
 
     std::map<int, int> m_sindex;
@@ -558,8 +532,8 @@ int main()
         m_new.clear();
         for(int j = 0; j < BEANER_NUM / 2; ++j)
         {
-            int top1 = weightSelect(m_weight, BEANER_NUM, m_totalWeight);
-            int top2 = weightSelect(m_weight, BEANER_NUM, m_totalWeight);
+            int top1 = 0, top2 = 0;
+            selectParent(m_all, top1, top2);
             Beaner child1 = Beaner();
             Beaner child2 = Beaner();
             swapDna(m_all[top1].m_dna, m_all[top2].m_dna, child1.m_dna, child2.m_dna, DNASIZE);
