@@ -22,11 +22,12 @@ using std::map;
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
-const int GENERATION = 1000;
+const int GENERATION = 10000;
 const int RACE = 1;
 const int DAY = 200;
 
 char g_buff[256] = {};
+float g_best = 0.0;
 
 enum ACT
 {
@@ -57,7 +58,7 @@ void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
     std::copy(p1, p1 + size, ret2);
     std::copy(p2, p2 + point, ret2);
 
-    for(int i = 0; i < 3; ++i) 
+    for(int i = 0; i < 1; ++i) 
     {
         point = rand() % size;
         ret1[point] = rand() % BEHAVIOR;
@@ -327,6 +328,7 @@ void testSwapDna(void)
     int y[] = {11,22,33,44,55,66};
     int b1[] = {0,0,0,0,0,0};
     int b2[] = {0,0,0,0,0,0};
+
     swapDna(x, y, b1, b2, 6);
     for(int i = 0; i < sizeof(b1) / sizeof(int); ++i)
     {
@@ -377,11 +379,11 @@ void writeString(char str[], const char* filename)
     if(fout.is_open())
     {
         //file opened successfully so we are here
-//        cout << "File Opened successfully!!!. Writing data from array to file" << endl;
+        //        cout << "File Opened successfully!!!. Writing data from array to file" << endl;
 
         fout << str; //writing ith character of array in the file
         fout << "\n";
-//        cout << "Array data successfully saved into the file " << filename << endl;
+        //        cout << "Array data successfully saved into the file " << filename << endl;
     }
     else //file could not be opened
     {
@@ -398,14 +400,14 @@ void writeArray(int array[], int size, const char * filename)
     if(fout.is_open())
     {
         //file opened successfully so we are here
-//        cout << "File Opened successfully!!!. Writing data from array to file" << endl;
+        //        cout << "File Opened successfully!!!. Writing data from array to file" << endl;
 
         for(int i = 0; i < size; i++)
         {
             fout << array[i]; //writing ith character of array in the file
             fout << " ";
         }
-//       cout << "Array data successfully saved into the file " << filename << endl;
+        //       cout << "Array data successfully saved into the file " << filename << endl;
     }
     else //file could not be opened
     {
@@ -428,12 +430,12 @@ void readArray(int array[], int size, const char * filename)
         for(int i = 0; i < size; ++i)
         {
             file >> array[i];
-            cout << array[i] << endl;
+            //cout << array[i] << endl;
         }
     }
     else //file could not be opened
     {
-        cout << "File" << filename << " could not be opened." << endl;
+        cout << "File:" << filename << " could not be opened." << endl;
     }
     file.close();
 }
@@ -481,7 +483,7 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
     beaner.m_score += score;
     calMap(mapinfo, beaner.m_x, beaner.m_y, act);
     calPos(mapinfo, beaner.m_x, beaner.m_y, act);
-    //    cout << "score:" << beaner.m_score << endl;
+    //cout << "score:" << beaner.m_score << endl;
 }
 
 void showDNA(Beaner& beaner)
@@ -510,6 +512,35 @@ void checkSameDNA(Beaner& b1, Beaner& b2)
     }
 }
 
+void breed(std::vector<Beaner>& all)
+{
+    std::vector<Beaner> tmp;
+    for(int j = 0; j < BEANER_NUM / 2; ++j)
+    {
+        int top1 = 0, top2 = 0;
+        selectParent(all, top1, top2);
+        Beaner child1 = Beaner();
+        Beaner child2 = Beaner();
+        swapDna(all[top1].m_dna, all[top2].m_dna, child1.m_dna, child2.m_dna, DNASIZE);
+        tmp.push_back(child1);
+        tmp.push_back(child2);
+    }
+
+    for(int j = BEANER_NUM / 2; j < BEANER_NUM; ++j)
+    {
+        tmp[j] = Beaner();  
+    }
+
+    tmp.pop_back();
+    all[0].m_score = 0;
+    all[0].m_x = 5;
+    all[0].m_y = 5;
+    tmp.push_back(all[0]);
+
+    all.clear();
+    all = tmp;
+}
+
 
 int main()
 {
@@ -522,13 +553,12 @@ int main()
         m_all.push_back(Beaner());
     }
 
+    readArray(m_all[0].m_dna, DNASIZE, "data/188");
+
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
 
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
-    int m_mapbk[MAP_SIZE][MAP_SIZE];
-    createMap(m_mapbk);
-    copyMap(m_mapbk, m_mapinfo);
 
     std::vector<Beaner> m_new;
     // showMap(m_mapinfo);
@@ -539,39 +569,31 @@ int main()
         {
             for(int r = 0; r < RACE; ++r)
             {
-                copyMap(m_mapbk, m_mapinfo);
+                createMap(m_mapinfo);
                 for(int i = 0; i < DAY; ++i)
                 {
                     dayAction(m_mapinfo, m_sindex, m_all[j]);
                 }
             }
             m_all[j].m_score /= RACE; 
+            //cout << "bean:" << j << ", score:" << m_all[j].m_score << endl; 
         }
         sortBeaner(m_all);
 
-        sprintf(g_buff, "generation:%d, score:%.0f", k, m_all[0].m_score);
-        cout << g_buff << endl;
+        Beaner& bb = m_all[0];
+        sprintf(g_buff, "generation:%d, score:%.0f", k, bb.m_score);
         writeString(g_buff, "data/generation.txt");
 
-        if(k == GENERATION - 1)
+        if(g_best < bb.m_score)
         {
-            sprintf(g_buff, "data/%.0f.txt", m_all[0].m_score);
-            writeArray(m_all[0].m_dna, DNASIZE, g_buff);
+            sprintf(g_buff, "generation:%d, score:%.0f", k, bb.m_score);
+            cout << g_buff << endl;
+
+            g_best = bb.m_score;
+            sprintf(g_buff, "data/%.0f.txt", bb.m_score);
+            writeArray(bb.m_dna, DNASIZE, g_buff);
         }
 
-        m_new.clear();
-        for(int j = 0; j < BEANER_NUM / 2; ++j)
-        {
-            int top1 = 0, top2 = 0;
-            selectParent(m_all, top1, top2);
-            Beaner child1 = Beaner();
-            Beaner child2 = Beaner();
-            swapDna(m_all[top1].m_dna, m_all[top2].m_dna, child1.m_dna, child2.m_dna, DNASIZE);
-            m_new.push_back(child1);
-            m_new.push_back(child2);
-        }
-
-        m_all.clear();
-        m_all = m_new;
+        breed(m_all);
     }
 }
