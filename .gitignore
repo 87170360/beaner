@@ -1,5 +1,5 @@
 *.o
-m
+beaner
 *.swp
 tags
 *.txt

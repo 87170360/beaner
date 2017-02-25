@@ -2,8 +2,10 @@
 #include<map>
 #include<vector>
 #include <algorithm>
+#include <string>
 #include <iostream> // library that contain basic input/output functions
 #include <fstream>  // library that contains file input/output functions
+#include <stdio.h>
 using namespace std;
 #include "beaner.h"
 using std::map;
@@ -20,10 +22,11 @@ using std::map;
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
-const int GENERATION = 10000;
-const int RACE = 1000;
+const int GENERATION = 1000;
+const int RACE = 1;
 const int DAY = 200;
 
+char g_buff[256] = {};
 
 enum ACT
 {
@@ -368,6 +371,25 @@ void testCalScore(int mapinfo[MAP_SIZE][MAP_SIZE])
     std::cout << "act_eat:" << mup << std::endl;
 }
 
+void writeString(char str[], const char* filename)
+{
+    ofstream fout(filename, std::ios::app); 
+    if(fout.is_open())
+    {
+        //file opened successfully so we are here
+//        cout << "File Opened successfully!!!. Writing data from array to file" << endl;
+
+        fout << str; //writing ith character of array in the file
+        fout << "\n";
+//        cout << "Array data successfully saved into the file " << filename << endl;
+    }
+    else //file could not be opened
+    {
+        cout << "File " << filename << " could not be opened." << endl;
+    }
+    fout.close();
+}
+
 void writeArray(int array[], int size, const char * filename)
 {
     ofstream fout(filename); 
@@ -376,14 +398,14 @@ void writeArray(int array[], int size, const char * filename)
     if(fout.is_open())
     {
         //file opened successfully so we are here
-        cout << "File Opened successfully!!!. Writing data from array to file" << endl;
+//        cout << "File Opened successfully!!!. Writing data from array to file" << endl;
 
         for(int i = 0; i < size; i++)
         {
             fout << array[i]; //writing ith character of array in the file
             fout << " ";
         }
-        cout << "Array data successfully saved into the file " << filename << endl;
+//       cout << "Array data successfully saved into the file " << filename << endl;
     }
     else //file could not be opened
     {
@@ -510,6 +532,7 @@ int main()
 
     std::vector<Beaner> m_new;
     // showMap(m_mapinfo);
+    string strDesc;
     for(int k = 0; k < GENERATION; ++k)
     {
         for(int j = 0; j < BEANER_NUM; ++j)
@@ -525,9 +548,16 @@ int main()
             m_all[j].m_score /= RACE; 
         }
         sortBeaner(m_all);
-        cout << "generation:" << k <<" score: " << m_all[0].m_score << endl; 
-        //checkSameDNA(m_all[0], m_all[1]);
-        //checkSameDNA(m_all[2], m_all[1]);
+
+        sprintf(g_buff, "generation:%d, score:%.0f", k, m_all[0].m_score);
+        cout << g_buff << endl;
+        writeString(g_buff, "data/generation.txt");
+
+        if(k == GENERATION - 1)
+        {
+            sprintf(g_buff, "data/%.0f.txt", m_all[0].m_score);
+            writeArray(m_all[0].m_dna, DNASIZE, g_buff);
+        }
 
         m_new.clear();
         for(int j = 0; j < BEANER_NUM / 2; ++j)

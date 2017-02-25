@@ -1,6 +1,6 @@
 CXX = g++
 OBJECTS = main.o beaner.o
-DESTDIR_TARGET = m
+DESTDIR_TARGET = beaner
 
 
 all: $(DESTDIR_TARGET)
@@ -14,6 +14,7 @@ $(DESTDIR_TARGET): $(OBJECTS)
 
 clean:
 	 rm -rf $(DESTDIR_TARGET) *.o
+	 rm ./data/*.txt
 
 r:	$(DESTDIR_TARGET)
 	./$(DESTDIR_TARGET)
