@@ -585,12 +585,13 @@ int main()
         sortBeaner(m_all);
 
         Beaner& bb = m_all[0];
-        sprintf(g_buff, "generation:%d, score:%.0f", k, bb.m_score);
-        writeString(g_buff, "data/generation.txt");
+        //sprintf(g_buff, "generation:%d, score:%.0f", k, bb.m_score);
+        //writeString(g_buff, "data/generation.txt");
 
         if(g_best < bb.m_score)
         {
             sprintf(g_buff, "generation:%d, score:%.0f", k, bb.m_score);
+            writeString(g_buff, "data/generation.txt");
             cout << g_buff << endl;
 
             g_best = bb.m_score;
