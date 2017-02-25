@@ -43,25 +43,24 @@ enum GRID
     grid_wall   = 3,
 };
 
-void swapDna(int p1[], int p2[], int ret[], int size)
+void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
 {
-    std::copy(p2, p2 + size, ret);
     int point = rand() % size + 1;
-    // int point = size / 2;
     //std::cout << "point:" << point << std::endl;
-    std::copy(p1, p1 + point, ret);
 
-    point = rand() % size;
-    //std::cout << "point:" << point << std::endl;
-    ret[point] = rand() % BEHAVIOR;
+    std::copy(p2, p2 + size, ret1);
+    std::copy(p1, p1 + point, ret1);
 
-    point = rand() % size;
-    //std::cout << "point:" << point << std::endl;
-    ret[point] = rand() % BEHAVIOR;
+    std::copy(p1, p1 + size, ret2);
+    std::copy(p2, p2 + point, ret2);
 
-    point = rand() % size;
-    //std::cout << "point:" << point << std::endl;
-    ret[point] = rand() % BEHAVIOR;
+    for(int i = 0; i < 3; ++i) 
+    {
+        point = rand() % size;
+        ret1[point] = rand() % BEHAVIOR;
+        point = rand() % size;
+        ret2[point] = rand() % BEHAVIOR;
+    }
 }
 
 int weightSelect(int weight[], int size, int total)
@@ -306,11 +305,17 @@ void testSwapDna(void)
 {
     int x[] = {1,2,3,4,5,6};
     int y[] = {11,22,33,44,55,66};
-    int b[] = {0,0,0,0,0,0};
-    swapDna(x, y, b, 6);
-    for(int i = 0; i < sizeof(b) / sizeof(int); ++i)
+    int b1[] = {0,0,0,0,0,0};
+    int b2[] = {0,0,0,0,0,0};
+    swapDna(x, y, b1, b2, 6);
+    for(int i = 0; i < sizeof(b1) / sizeof(int); ++i)
     {
-        std::cout << b[i] << " " ;
+        std::cout << b1[i] << " " ;
+    }
+    std::cout << std::endl;
+    for(int i = 0; i < sizeof(b2) / sizeof(int); ++i)
+    {
+        std::cout << b2[i] << " " ;
     }
     std::cout << std::endl;
 }
@@ -502,6 +507,9 @@ int main()
 {
     srand(time(NULL));
 
+    testSwapDna();
+    return 0;
+
     //all beaner
     std::vector<Beaner> m_all;
     //weight list
@@ -548,13 +556,15 @@ int main()
         //checkSameDNA(m_all[2], m_all[1]);
 
         m_new.clear();
-        for(int j = 0; j < BEANER_NUM; ++j)
+        for(int j = 0; j < BEANER_NUM / 2; ++j)
         {
             int top1 = weightSelect(m_weight, BEANER_NUM, m_totalWeight);
             int top2 = weightSelect(m_weight, BEANER_NUM, m_totalWeight);
-            Beaner child = Beaner();
-            swapDna(m_all[top1].m_dna, m_all[top2].m_dna, child.m_dna, DNASIZE);
-            m_new.push_back(child);
+            Beaner child1 = Beaner();
+            Beaner child2 = Beaner();
+            swapDna(m_all[top1].m_dna, m_all[top2].m_dna, child1.m_dna, child2.m_dna, DNASIZE);
+            m_new.push_back(child1);
+            m_new.push_back(child2);
         }
 
         m_all.clear();
