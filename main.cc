@@ -6,6 +6,7 @@
 #include <iostream> // library that contain basic input/output functions
 #include <fstream>  // library that contains file input/output functions
 #include <stdio.h>
+#include <time.h>
 using namespace std;
 #include "beaner.h"
 using std::map;
@@ -22,7 +23,7 @@ using std::map;
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
-const int GENERATION = 10000;
+const int GENERATION = 1482 * 1000;
 const int RACE = 1;
 const int DAY = 200;
 
@@ -546,6 +547,9 @@ int main()
 {
     srand(time(NULL));
 
+    clock_t ts, te;
+
+    ts = clock();
     //all beaner
     std::vector<Beaner> m_all;
     for(int i = 0; i < BEANER_NUM; ++i)
@@ -596,4 +600,8 @@ int main()
 
         breed(m_all);
     }
+    
+    te = clock();
+    double diff = (te - ts) / CLOCKS_PER_SEC;
+    printf("time:%.0f seconds\n", diff);
 }
