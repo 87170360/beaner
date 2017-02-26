@@ -13,8 +13,8 @@ $(DESTDIR_TARGET): $(OBJECTS)
 	 $(CXX) -c -o $@ $<
 
 clean:
-	 rm -rf $(DESTDIR_TARGET) *.o
-	 rm ./data/*.txt
+	 rm -f $(DESTDIR_TARGET) *.o
+	 rm -f ./data/*
 
 r:	$(DESTDIR_TARGET)
 	./$(DESTDIR_TARGET)

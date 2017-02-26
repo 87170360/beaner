@@ -550,7 +550,7 @@ void breed(std::vector<Beaner>& all)
 void evolution(void)
 {
     int bestDNA[DNASIZE] = {};
-    readArray(bestDNA, DNASIZE, "data/198");
+    readArray(bestDNA, DNASIZE, "best/198");
 
     //all beaner
     std::vector<Beaner> m_all;
@@ -595,7 +595,7 @@ void evolution(void)
             cout << g_buff << endl;
 
             g_best = bb.m_score;
-            sprintf(g_buff, "data/%.0f.txt", bb.m_score);
+            sprintf(g_buff, "data/%.0f", bb.m_score);
             writeArray(bb.m_dna, DNASIZE, g_buff);
         }
 
