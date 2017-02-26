@@ -4,3 +4,4 @@ beaner
 tags
 *.txt
 *.swo
+data/*

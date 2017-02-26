@@ -12,6 +12,7 @@ class Beaner
     public:
         //Beaner(int sand);
         Beaner(void);
+        Beaner(const int dna[DNASIZE]);
         ~Beaner(void);
 
     public:

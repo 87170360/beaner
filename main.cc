@@ -59,7 +59,7 @@ void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
     std::copy(p1, p1 + size, ret2);
     std::copy(p2, p2 + point, ret2);
 
-    for(int i = 0; i < 1; ++i) 
+    for(int i = 0; i < 5; ++i) 
     {
         point = rand() % size;
         ret1[point] = rand() % BEHAVIOR;
@@ -496,6 +496,15 @@ void showDNA(Beaner& beaner)
     cout << endl;
 }
 
+void copyDNA(const Beaner& src, Beaner& des)
+{
+    for(int i = 0; i < DNASIZE; ++i)
+    {
+        des.m_dna[i] = src.m_dna[i];
+    }
+    cout << endl;
+}
+
 void checkSameDNA(Beaner& b1, Beaner& b2)
 {
     bool ret = true;
@@ -527,11 +536,6 @@ void breed(std::vector<Beaner>& all)
         tmp.push_back(child2);
     }
 
-    for(int j = BEANER_NUM / 2; j < BEANER_NUM; ++j)
-    {
-        tmp[j] = Beaner();  
-    }
-
     tmp.pop_back();
     all[0].m_score = 0;
     all[0].m_x = 5;
@@ -550,14 +554,16 @@ int main()
     clock_t ts, te;
 
     ts = clock();
+
+    int bestDNA[DNASIZE] = {};
+    readArray(bestDNA, DNASIZE, "data/198");
+
     //all beaner
     std::vector<Beaner> m_all;
     for(int i = 0; i < BEANER_NUM; ++i)
     {
-        m_all.push_back(Beaner());
+        m_all.push_back(Beaner(bestDNA));
     }
-
-    readArray(m_all[0].m_dna, DNASIZE, "data/188");
 
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
