@@ -21,10 +21,10 @@ using std::map;
    (0,0)
    */
 
-const int BEANER_NUM = 200;
+const int BEANER_NUM = 800;
 const int MAP_SIZE = 12;
 const int GENERATION = 1482 * 1000;
-const int RACE = 1;
+const int RACE = 10;
 const int DAY = 200;
 
 char g_buff[256] = {};
@@ -59,7 +59,7 @@ void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
     std::copy(p1, p1 + size, ret2);
     std::copy(p2, p2 + point, ret2);
 
-    for(int i = 0; i < 5; ++i) 
+    for(int i = 0; i < 20; ++i) 
     {
         point = rand() % size;
         ret1[point] = rand() % BEHAVIOR;
@@ -481,6 +481,7 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
 
         beaner.m_dna[act_index] = nact; 
     }
+
     beaner.m_score += score;
     calMap(mapinfo, beaner.m_x, beaner.m_y, act);
     calPos(mapinfo, beaner.m_x, beaner.m_y, act);
@@ -546,15 +547,8 @@ void breed(std::vector<Beaner>& all)
     all = tmp;
 }
 
-
-int main()
+void evolution(void)
 {
-    srand(time(NULL));
-
-    clock_t ts, te;
-
-    ts = clock();
-
     int bestDNA[DNASIZE] = {};
     readArray(bestDNA, DNASIZE, "data/198");
 
@@ -607,8 +601,21 @@ int main()
 
         breed(m_all);
     }
+}
+
+int main()
+{
+    srand(time(NULL));
+
+    clock_t ts, te;
+
+    ts = clock();
+    
+    evolution();
     
     te = clock();
     double diff = (te - ts) / CLOCKS_PER_SEC;
     printf("time:%.0f seconds\n", diff);
+    sprintf(g_buff, "%.0f seconds\n", diff);
+    writeString(g_buff, "data/time.txt");
 }
