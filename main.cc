@@ -21,10 +21,10 @@ using std::map;
    (0,0)
    */
 
-const int BEANER_NUM = 800;
+const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
 const int GENERATION = 1482 * 1000;
-const int RACE = 10;
+const int RACE = 1;
 const int DAY = 200;
 
 char g_buff[256] = {};
