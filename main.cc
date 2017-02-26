@@ -7,6 +7,9 @@
 #include <fstream>  // library that contains file input/output functions
 #include <stdio.h>
 #include <time.h>
+#include <chrono>
+#include <thread>
+
 using namespace std;
 #include "beaner.h"
 using std::map;
@@ -46,6 +49,13 @@ enum GRID
     grid_none   = 1,
     grid_bean   = 2,
     grid_wall   = 3,
+};
+
+enum TRACK
+{
+    track_1     = 100,
+    track_2     = 101,
+    track_3     = 102,
 };
 
 void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
@@ -603,6 +613,65 @@ void evolution(void)
     }
 }
 
+void showMap2(int mapinfo[MAP_SIZE][MAP_SIZE])
+{
+    for(int i = 0; i < 30; ++i)
+    {
+        cout << endl;
+    }
+
+    for(int y = MAP_SIZE - 1; y >= 0; --y)
+    {
+        for(int x = 0; x < MAP_SIZE; ++x)
+        {
+            switch(mapinfo[y][x])
+            {
+                case grid_none: cout << "◻︎ ";break;
+                case grid_bean: cout << "✢ ";break;
+                case grid_wall: cout << "◼︎ ";break;
+                case track_1: cout << "◉ ";break;
+                case track_2: cout << "◎ ";break;
+                case track_3: cout << "◦ ";break;
+            }
+        }
+        cout << endl;
+    }
+
+}
+
+void draw(void)
+{
+    int mapinfo[MAP_SIZE][MAP_SIZE];
+    createMap(mapinfo);
+
+    int mapinfo2[MAP_SIZE][MAP_SIZE];
+    copyMap(mapinfo, mapinfo2);
+
+    std::map<int, int> sindex;
+    initStatusIndex(sindex);
+
+    showMap2(mapinfo2);
+
+    int bestDNA[DNASIZE] = {};
+    readArray(bestDNA, DNASIZE, "best/219");
+    Beaner beaner = Beaner(bestDNA);
+
+    int x1 = beaner.m_x;
+    int y1 = beaner.m_y;
+
+    for(int i = 0; i < DAY; ++i)
+    {
+        dayAction(mapinfo, sindex, beaner);
+        x1 = beaner.m_x;
+        y1 = beaner.m_y;
+        copyMap(mapinfo, mapinfo2);
+        mapinfo2[y1][x1] = track_1;
+        showMap2(mapinfo2);
+        cout << "day:" << i << " score:" << beaner.m_score << endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+}
+
 int main()
 {
     srand(time(NULL));
@@ -610,10 +679,10 @@ int main()
     clock_t ts, te;
 
     ts = clock();
-    
-    evolution();
-    
+    //evolution();
+    draw();
     te = clock();
+
     double diff = (te - ts) / CLOCKS_PER_SEC;
     printf("time:%.0f seconds\n", diff);
     sprintf(g_buff, "%.0f seconds\n", diff);

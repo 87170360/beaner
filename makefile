@@ -7,10 +7,10 @@ all: $(DESTDIR_TARGET)
 	ctags -R
 
 $(DESTDIR_TARGET): $(OBJECTS)
-	$(CXX) -o $(DESTDIR_TARGET) $(OBJECTS)
+	$(CXX) -o $(DESTDIR_TARGET) $(OBJECTS) 
 
 .cc.o:
-	 $(CXX) -c -o $@ $<
+	 $(CXX) -std=c++11 -c -o $@ $<
 
 clean:
 	 rm -f $(DESTDIR_TARGET) *.o
