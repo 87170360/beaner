@@ -101,10 +101,16 @@ void selectParent(const std::vector<Beaner>& all, int& father, int& mother)
 {
     std::vector<int> weight;
     int total = 0;
+    int score = 0;
     for(std::vector<Beaner>::const_iterator it = all.begin(); it != all.end(); ++it)
     {
-        weight.push_back((*it).m_score + 2000); 
-        total += (*it).m_score + 2000;
+        score = (*it).m_score;
+        if(score < 0)
+        {
+            score = 0;
+        }
+        weight.push_back(score); 
+        total += score;
     }
 
     int size = weight.size();
@@ -509,13 +515,12 @@ void showDNA(Beaner& beaner)
     cout << endl;
 }
 
-void copyDNA(const Beaner& src, Beaner& des)
+void copyDNA(int src[DNASIZE], int des[DNASIZE])
 {
     for(int i = 0; i < DNASIZE; ++i)
     {
-        des.m_dna[i] = src.m_dna[i];
+        des[i] = src[i];
     }
-    cout << endl;
 }
 
 void checkSameDNA(Beaner& b1, Beaner& b2)
@@ -562,15 +567,24 @@ void breed(std::vector<Beaner>& all)
 void evolution(void)
 {
     int bestDNA[DNASIZE] = {};
-    readArray(bestDNA, DNASIZE, g_dnafile);
+    //readArray(bestDNA, DNASIZE, g_dnafile);
 
     //all beaner
     std::vector<Beaner> m_all;
     for(int i = 0; i < BEANER_NUM; ++i)
     {
-        m_all.push_back(Beaner(bestDNA));
-        //m_all.push_back(Beaner());
+        //m_all.push_back(Beaner(bestDNA));
+        m_all.push_back(Beaner());
     }
+
+    readArray(bestDNA, DNASIZE, "best/219");
+    copyDNA(bestDNA, m_all[0].m_dna);
+    readArray(bestDNA, DNASIZE, "best/214");
+    copyDNA(bestDNA, m_all[1].m_dna);
+    readArray(bestDNA, DNASIZE, "best/204");
+    copyDNA(bestDNA, m_all[2].m_dna);
+    readArray(bestDNA, DNASIZE, "best/198");
+    copyDNA(bestDNA, m_all[3].m_dna);
 
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
