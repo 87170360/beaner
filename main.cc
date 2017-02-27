@@ -62,6 +62,7 @@ enum TRACK
 void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
 {
     int point = rand() % size + 1;
+    //int point = size / 2;
     //std::cout << "point:" << point << std::endl;
 
     std::copy(p2, p2 + size, ret1);
@@ -481,7 +482,7 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
     int act = beaner.m_dna[act_index];
     //   cout << "dayAction " << "x:" << beaner.m_x << " y:" << beaner.m_y << " act:" << act << endl;
     int score = calScore(mapinfo, beaner.m_x, beaner.m_y, act);
-    if(score < 0)
+    if(score <= 0)
     {
         int nact = 0;
         do
@@ -568,6 +569,7 @@ void evolution(void)
     for(int i = 0; i < BEANER_NUM; ++i)
     {
         m_all.push_back(Beaner(bestDNA));
+        //m_all.push_back(Beaner());
     }
 
     std::map<int, int> m_sindex;
