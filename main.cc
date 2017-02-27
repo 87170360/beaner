@@ -9,6 +9,8 @@
 #include <time.h>
 #include <chrono>
 #include <thread>
+#include <dirent.h>
+#include <sys/stat.h>
 
 using namespace std;
 #include "beaner.h"
@@ -58,6 +60,33 @@ enum TRACK
     track_2     = 101,
     track_3     = 102,
 };
+
+void GetFilesInDirectory(std::vector<string> &out, const string &directory)
+{
+    DIR *dir;
+    class dirent *ent;
+    class stat st;
+
+    dir = opendir(directory.c_str());
+    while ((ent = readdir(dir)) != NULL) {
+            const string file_name = ent->d_name;
+            const string full_file_name = directory + "/" + file_name;
+    
+            if (file_name[0] == '.')
+                continue;
+    
+            if (stat(full_file_name.c_str(), &st) == -1)
+                continue;
+    
+            const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+    
+            if (is_directory)
+                continue;
+    
+            out.push_back(full_file_name);
+        }
+    closedir(dir);
+} // GetFilesInDirectory
 
 void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
 {
@@ -564,27 +593,29 @@ void breed(std::vector<Beaner>& all)
     all = tmp;
 }
 
-void evolution(void)
+void initWithSeeds(std::vector<Beaner>& all)
 {
     int bestDNA[DNASIZE] = {};
-    //readArray(bestDNA, DNASIZE, g_dnafile);
+    std::vector<string> filename;
 
+    GetFilesInDirectory(filename, "./best");
+    for(size_t i = 0; i < filename.size() && i < all.size(); ++i)
+    {
+        readArray(bestDNA, DNASIZE, filename[i].c_str());
+        copyDNA(bestDNA, all[i].m_dna);
+    }
+}
+
+void evolution(void)
+{
     //all beaner
     std::vector<Beaner> m_all;
     for(int i = 0; i < BEANER_NUM; ++i)
     {
-        //m_all.push_back(Beaner(bestDNA));
         m_all.push_back(Beaner());
     }
 
-    readArray(bestDNA, DNASIZE, "best/219");
-    copyDNA(bestDNA, m_all[0].m_dna);
-    readArray(bestDNA, DNASIZE, "best/214");
-    copyDNA(bestDNA, m_all[1].m_dna);
-    readArray(bestDNA, DNASIZE, "best/204");
-    copyDNA(bestDNA, m_all[2].m_dna);
-    readArray(bestDNA, DNASIZE, "best/198");
-    copyDNA(bestDNA, m_all[3].m_dna);
+    initWithSeeds(m_all);
 
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
@@ -688,6 +719,7 @@ void draw(void)
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }
+
 
 int main()
 {
