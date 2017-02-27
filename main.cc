@@ -32,6 +32,7 @@ const int DAY = 200;
 
 char g_buff[256] = {};
 float g_best = 0.0;
+const char* g_dnafile = "best/219";
 
 enum ACT
 {
@@ -560,7 +561,7 @@ void breed(std::vector<Beaner>& all)
 void evolution(void)
 {
     int bestDNA[DNASIZE] = {};
-    readArray(bestDNA, DNASIZE, "best/198");
+    readArray(bestDNA, DNASIZE, g_dnafile);
 
     //all beaner
     std::vector<Beaner> m_all;
@@ -653,7 +654,7 @@ void draw(void)
     showMap2(mapinfo2);
 
     int bestDNA[DNASIZE] = {};
-    readArray(bestDNA, DNASIZE, "best/219");
+    readArray(bestDNA, DNASIZE, g_dnafile);
     Beaner beaner = Beaner(bestDNA);
 
     int x1 = beaner.m_x;
@@ -679,8 +680,8 @@ int main()
     clock_t ts, te;
 
     ts = clock();
-    //evolution();
-    draw();
+    evolution();
+    //draw();
     te = clock();
 
     double diff = (te - ts) / CLOCKS_PER_SEC;
