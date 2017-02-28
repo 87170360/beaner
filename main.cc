@@ -28,7 +28,7 @@ using std::map;
 
 const int BEANER_NUM = 200;
 const int MAP_SIZE = 12;
-const int GENERATION = 14820 * 1000;
+const int GENERATION = 148200 * 1000;
 const int RACE = 1;
 const int DAY = 200;
 
@@ -517,7 +517,7 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
     int act = beaner.m_dna[act_index];
     //   cout << "dayAction " << "x:" << beaner.m_x << " y:" << beaner.m_y << " act:" << act << endl;
     int score = calScore(mapinfo, beaner.m_x, beaner.m_y, act);
-    if(score <= 0)
+    if(score < 0)
     {
         int nact = 0;
         do
