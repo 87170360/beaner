@@ -14,6 +14,7 @@ class Beaner
         Beaner(void);
         Beaner(const int dna[DNASIZE]);
         ~Beaner(void);
+        void resetDNA(void);
 
     public:
         int m_dna[DNASIZE];

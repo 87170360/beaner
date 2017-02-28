@@ -31,6 +31,7 @@ const int MAP_SIZE = 12;
 const int GENERATION = 148200 * 1000;
 const int RACE = 1;
 const int DAY = 200;
+const int DESTORY = 3000;
 
 char g_buff[256] = {};
 float g_best = 0.0;
@@ -100,7 +101,7 @@ void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
     std::copy(p1, p1 + size, ret2);
     std::copy(p2, p2 + point, ret2);
 
-    for(int i = 0; i < 20; ++i) 
+    for(int i = 0; i < 6; ++i) 
     {
         point = rand() % size;
         ret1[point] = rand() % BEHAVIOR;
@@ -517,6 +518,7 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
     int act = beaner.m_dna[act_index];
     //   cout << "dayAction " << "x:" << beaner.m_x << " y:" << beaner.m_y << " act:" << act << endl;
     int score = calScore(mapinfo, beaner.m_x, beaner.m_y, act);
+
     if(score <= 0)
     {
         int nact = 0;
@@ -583,11 +585,14 @@ void breed(std::vector<Beaner>& all)
         tmp.push_back(child2);
     }
 
-    tmp.pop_back();
-    all[0].m_score = 0;
-    all[0].m_x = 5;
-    all[0].m_y = 5;
-    tmp.push_back(all[0]);
+    for(int i = 0; i < 1; ++i)
+    {
+        tmp.pop_back();
+        all[i].m_score = 0;
+        all[i].m_x = 5;
+        all[i].m_y = 5;
+        tmp.push_back(all[i]);
+    }
 
     all.clear();
     all = tmp;
@@ -603,6 +608,22 @@ void initWithSeeds(std::vector<Beaner>& all)
     {
         readArray(bestDNA, DNASIZE, filename[i].c_str());
         copyDNA(bestDNA, all[i].m_dna);
+    }
+}
+
+void comet(std::vector<Beaner>& all)
+{
+    static int gene = 0;
+    if(gene > DESTORY)
+    {
+        gene = 0; 
+        sprintf(g_buff, "comet!");
+        writeString(g_buff, "data/generation.txt");
+    }
+    gene++;
+    for(int i = 0; i < int(BEANER_NUM / 2); ++i)
+    {
+        all[i].resetDNA(); 
     }
 }
 
@@ -658,12 +679,13 @@ void evolution(void)
         }
 
         breed(m_all);
+        comet(m_all);
     }
 }
 
 void showMap2(int mapinfo[MAP_SIZE][MAP_SIZE])
 {
-    for(int i = 0; i < 30; ++i)
+    for(int i = 0; i < 40; ++i)
     {
         cout << endl;
     }
@@ -715,7 +737,7 @@ void draw(void)
         copyMap(mapinfo, mapinfo2);
         mapinfo2[y1][x1] = track_1;
         showMap2(mapinfo2);
-        cout << "day:" << i << " score:" << beaner.m_score << endl;
+        //cout << "day:" << i << " score:" << beaner.m_score << endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }

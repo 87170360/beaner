@@ -26,3 +26,11 @@ Beaner::~Beaner(void)
 
 }
     
+        
+void Beaner::resetDNA(void)
+{
+    for(int i = 0; i < DNASIZE; ++i)
+    {
+        m_dna[i] =  rand() % BEHAVIOR; 
+    }
+}
