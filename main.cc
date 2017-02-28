@@ -517,7 +517,6 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
     int act = beaner.m_dna[act_index];
     //   cout << "dayAction " << "x:" << beaner.m_x << " y:" << beaner.m_y << " act:" << act << endl;
     int score = calScore(mapinfo, beaner.m_x, beaner.m_y, act);
-    /*
     if(score <= 0)
     {
         int nact = 0;
@@ -529,7 +528,6 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
 
         beaner.m_dna[act_index] = nact; 
     }
-    */
 
     beaner.m_score += score;
     calMap(mapinfo, beaner.m_x, beaner.m_y, act);
