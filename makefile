@@ -10,7 +10,7 @@ $(DESTDIR_TARGET): $(OBJECTS)
 	$(CXX) -o $(DESTDIR_TARGET) $(OBJECTS) 
 
 .cc.o:
-	 $(CXX) -std=c++11 -c -o $@ $<
+	 $(CXX) -std=c++11 -c -g -o $@ $<
 
 clean:
 	 rm -f $(DESTDIR_TARGET) *.o

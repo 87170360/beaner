@@ -31,7 +31,7 @@ const int MAP_SIZE = 12;
 const int GENERATION = 148200 * 1000;
 const int RACE = 1;
 const int DAY = 200;
-const int DESTORY = 3000;
+const int DESTORY = 10000;
 
 char g_buff[256] = {};
 float g_best = 0.0;
@@ -101,7 +101,7 @@ void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
     std::copy(p1, p1 + size, ret2);
     std::copy(p2, p2 + point, ret2);
 
-    for(int i = 0; i < 6; ++i) 
+    for(int i = 0; i < 10; ++i) 
     {
         point = rand() % size;
         ret1[point] = rand() % BEHAVIOR;
@@ -110,12 +110,12 @@ void swapDna(int p1[], int p2[], int ret1[], int ret2[], int size)
     }
 }
 
-int weightSelect(const std::vector<int>& weight, int size, int total)
+int weightSelect(const std::vector<int>& weight, int total)
 {
     int pick = rand() % total;
     //std::cout << "pick:" << pick << "total:" << total;
     int tmp = 0;
-    for(int i = 0; i < size; ++i) 
+    for(int i = 0; i < weight.size(); ++i) 
     {
         tmp += weight[i];    
         if(tmp >= pick)
@@ -124,7 +124,7 @@ int weightSelect(const std::vector<int>& weight, int size, int total)
         }
     }
     //std::cout << "not found weight!" << std::endl;
-    return 0;
+    return -1;
 }
 
 void selectParent(const std::vector<Beaner>& all, int& father, int& mother)
@@ -143,10 +143,8 @@ void selectParent(const std::vector<Beaner>& all, int& father, int& mother)
         total += score;
     }
 
-    int size = weight.size();
-
-    father = weightSelect(weight, size, total);
-    mother = weightSelect(weight, size, total);
+    father = weightSelect(weight, total);
+    mother = weightSelect(weight, total);
 }
 
 
@@ -519,6 +517,7 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
     //   cout << "dayAction " << "x:" << beaner.m_x << " y:" << beaner.m_y << " act:" << act << endl;
     int score = calScore(mapinfo, beaner.m_x, beaner.m_y, act);
 
+    /*
     if(score <= 0)
     {
         int nact = 0;
@@ -530,6 +529,7 @@ void dayAction(int mapinfo[MAP_SIZE][MAP_SIZE], const std::map<int, int>& sindex
 
         beaner.m_dna[act_index] = nact; 
     }
+    */
 
     beaner.m_score += score;
     calMap(mapinfo, beaner.m_x, beaner.m_y, act);
@@ -621,7 +621,7 @@ void comet(std::vector<Beaner>& all)
         writeString(g_buff, "data/generation.txt");
     }
     gene++;
-    for(int i = 0; i < int(BEANER_NUM / 2); ++i)
+    for(int i = int(BEANER_NUM / 2); i < BEANER_NUM; ++i)
     {
         all[i].resetDNA(); 
     }
@@ -742,6 +742,30 @@ void draw(void)
     }
 }
 
+void testWeightSelect(void)
+{
+    vector<int> weight;
+    weight.push_back(20);
+    weight.push_back(80);
+    weight.push_back(0);
+    weight.push_back(0);
+    int first = 0;
+    int second = 0;
+    for(int i = 0; i < 10000; ++i)
+    {
+        if(0 == weightSelect(weight, 100)) 
+        {
+           first++; 
+        }
+        if(1 == weightSelect(weight, 100)) 
+        {
+            second++; 
+        }
+    }
+    cout << first << endl;
+    cout << second << endl;
+}
+
 
 int main()
 {
@@ -758,4 +782,6 @@ int main()
     printf("time:%.0f seconds\n", diff);
     sprintf(g_buff, "%.0f seconds\n", diff);
     writeString(g_buff, "data/time.txt");
+
+
 }
