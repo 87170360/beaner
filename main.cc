@@ -132,13 +132,22 @@ void selectParent(const std::vector<Beaner>& all, int& father, int& mother)
     std::vector<int> weight;
     int total = 0;
     int score = 0;
+
+    //获取修正量
+    int fixval = 0;
+    for(std::vector<Beaner>::const_iterator it = all.begin(); it != all.end(); ++it)
+    {
+        if((*it).m_score < fixval) 
+        {
+            fixval = (*it).m_score; 
+        }
+    }
+    fixval = -fixval;
+
     for(std::vector<Beaner>::const_iterator it = all.begin(); it != all.end(); ++it)
     {
         score = (*it).m_score;
-        if(score < 0)
-        {
-            score = 0;
-        }
+        score += fixval;
         weight.push_back(score); 
         total += score;
     }
@@ -636,7 +645,7 @@ void evolution(void)
         m_all.push_back(Beaner());
     }
 
-    initWithSeeds(m_all);
+    //initWithSeeds(m_all);
 
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
@@ -782,6 +791,4 @@ int main()
     printf("time:%.0f seconds\n", diff);
     sprintf(g_buff, "%.0f seconds\n", diff);
     writeString(g_buff, "data/time.txt");
-
-
 }
