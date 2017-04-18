@@ -152,6 +152,12 @@ void selectParent(const std::vector<Beaner>& all, int& father, int& mother)
         total += score;
     }
 
+    if(total == 0)
+    {
+        father = 0;
+        father = 1;
+    }
+
     father = weightSelect(weight, total);
     mother = weightSelect(weight, total);
 }
@@ -645,7 +651,7 @@ void evolution(void)
         m_all.push_back(Beaner());
     }
 
-    //initWithSeeds(m_all);
+    initWithSeeds(m_all);
 
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
@@ -664,6 +670,7 @@ void evolution(void)
                 createMap(m_mapinfo);
                 for(int i = 0; i < DAY; ++i)
                 {
+                    srand(time(NULL));
                     dayAction(m_mapinfo, m_sindex, m_all[j]);
                 }
             }
@@ -688,7 +695,7 @@ void evolution(void)
         }
 
         breed(m_all);
-        comet(m_all);
+        //comet(m_all);
     }
 }
 
