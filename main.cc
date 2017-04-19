@@ -156,6 +156,7 @@ void selectParent(const std::vector<Beaner>& all, int& father, int& mother)
     {
         father = 0;
         father = 1;
+        return;
     }
 
     father = weightSelect(weight, total);
