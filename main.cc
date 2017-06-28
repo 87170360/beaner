@@ -614,6 +614,7 @@ void breed(std::vector<Beaner>& all)
     all = tmp;
 }
 
+//冲配置文件加载dna
 void initWithSeeds(std::vector<Beaner>& all)
 {
     int bestDNA[DNASIZE] = {};
@@ -645,14 +646,15 @@ void comet(std::vector<Beaner>& all)
 
 void evolution(void)
 {
-    //all beaner
+    //初始化吃豆人
     std::vector<Beaner> m_all;
     for(int i = 0; i < BEANER_NUM; ++i)
     {
         m_all.push_back(Beaner());
     }
 
-    initWithSeeds(m_all);
+    //重已经生成的配置加载dna
+    //initWithSeeds(m_all);
 
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
