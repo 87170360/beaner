@@ -353,6 +353,7 @@ void testCalPos(int mapinfo[MAP_SIZE][MAP_SIZE])
     y = 1;
 }
 
+//5个格子完全状态对应索引
 void initStatusIndex(std::map<int, int>& sindex)
 {
     int indexCount = 0;
@@ -646,7 +647,7 @@ void comet(std::vector<Beaner>& all)
 
 void evolution(void)
 {
-    //初始化吃豆人
+    //初始化beaner
     std::vector<Beaner> m_all;
     for(int i = 0; i < BEANER_NUM; ++i)
     {
@@ -656,21 +657,27 @@ void evolution(void)
     //重已经生成的配置加载dna
     //initWithSeeds(m_all);
 
+    //格子状态和索引
     std::map<int, int> m_sindex;
     initStatusIndex(m_sindex);
 
+    //地图数组
     int m_mapinfo[MAP_SIZE][MAP_SIZE];
 
     std::vector<Beaner> m_new;
     // showMap(m_mapinfo);
-    string strDesc;
+    //string strDesc;
+    //代
     for(int k = 0; k < GENERATION; ++k)
     {
+        //beaner
         for(int j = 0; j < BEANER_NUM; ++j)
         {
+            //轮
             for(int r = 0; r < RACE; ++r)
             {
                 createMap(m_mapinfo);
+                //天
                 for(int i = 0; i < DAY; ++i)
                 {
                     srand(time(NULL));
@@ -686,6 +693,7 @@ void evolution(void)
         //sprintf(g_buff, "generation:%d, score:%.0f", k, bb.m_score);
         //writeString(g_buff, "data/generation.txt");
 
+        //保存最佳dna
         if(g_best < bb.m_score)
         {
             sprintf(g_buff, "generation:%d, score:%.0f", k, bb.m_score);
